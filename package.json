@@ -1,0 +1,59 @@
+{
+  "name": "@iiif/vault",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "node": {
+        "require": "./dist/cjs-node/index.js",
+        "import": "./dist/esm-node/index.mjs",
+        "default": "./dist/cjs-node/index.js"
+      },
+      "browser": {
+        "require": "./dist/cjs/index.js",
+        "import": "./dist/esm/index.js",
+        "default": "./dist/index.umd.js"
+      }
+    },
+    "./actions": {
+      "require": "./dist/actions/cjs/index.js",
+      "import": "./dist/actions/esm/index.mjs",
+      "default": "./dist/actions/cjs/index.js"
+    },
+    "./store": {
+      "require": "./dist/store/cjs/index.js",
+      "import": "./dist/store/esm/index.mjs",
+      "default": "./dist/store/cjs/index.js"
+    },
+    "./utility": {
+      "require": "./dist/utility/cjs/index.js",
+      "import": "./dist/utility/esm/index.mjs",
+      "default": "./dist/utility/cjs/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p . --declaration --emitDeclarationOnly && rollup -c"
+  },
+  "devDependencies": {
+    "@hyperion-framework/parser": "^2.0.0-alpha.0",
+    "@typescript-eslint/eslint-plugin": "^5.9.1",
+    "@typescript-eslint/parser": "^5.9.1",
+    "eslint": "^8.7.0",
+    "eslint-plugin-json": "^3.1.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.5.1",
+    "rollup": "^2.64.0",
+    "rollup-library-template": "^1.0.2",
+    "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "@iiif/presentation-3": "^1.0.0",
+    "mitt": "^3.0.0",
+    "node-fetch": "^3.1.1",
+    "redux": "^4.1.2",
+    "typesafe-actions": "^5.1.0"
+  }
+}
