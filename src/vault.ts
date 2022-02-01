@@ -2,7 +2,7 @@
 
 import { AllActions, Entities, IIIFStore, NormalizedEntity, ReduxStore, RequestState } from './types';
 import { CollectionNormalized, ManifestNormalized, Reference } from '@iiif/presentation-3';
-import { serialise, SerialiseConfig, serialiseConfigPresentation2, serialiseConfigPresentation3 } from '@iiif/parser';
+import { serialize, SerializeConfig, serializeConfigPresentation2, serializeConfigPresentation3 } from '@iiif/parser';
 import { entityActions, metaActions } from './actions';
 import { createFetchHelper, areInputsEqual } from './utility';
 import { createStore } from './store';
@@ -64,6 +64,10 @@ export class Vault {
     );
   }
 
+  dispatch(action: any) {
+    this.store.dispatch(action);
+  }
+
   middleware =
     (store: ReduxStore) =>
     (next: (action: AllActions) => IIIFStore) =>
@@ -74,16 +78,16 @@ export class Vault {
       return state;
     };
 
-  serialise<Return>(entity: Reference<keyof Entities>, config: SerialiseConfig) {
-    return serialise<Return>(this.getState() as any, entity, config);
+  serialize<Return>(entity: Reference<keyof Entities>, config: SerializeConfig) {
+    return serialize<Return>(this.getState() as any, entity, config);
   }
 
   toPresentation2<Return>(entity: Reference<keyof Entities>) {
-    return this.serialise<Return>(entity, serialiseConfigPresentation2);
+    return this.serialize<Return>(entity, serializeConfigPresentation2);
   }
 
   toPresentation3<Return>(entity: Reference<keyof Entities>) {
-    return this.serialise<Return>(entity, serialiseConfigPresentation3);
+    return this.serialize<Return>(entity, serializeConfigPresentation3);
   }
 
   get<Entity extends EntityRef<any>>(
