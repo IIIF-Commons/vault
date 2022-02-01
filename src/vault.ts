@@ -57,10 +57,16 @@ export class Vault {
 
   batch(cb: (vault: this) => void) {
     this.isBatching = true;
-    cb(this);
-    this.store.dispatch(batchActions({ actions: this.batchQueue }));
-    this.batchQueue = [];
-    this.isBatching = false;
+    try {
+      cb(this);
+      this.store.dispatch(batchActions({ actions: this.batchQueue }));
+    } catch (e) {
+      // Even if we error, we still need to reset the queue.
+      this.batchQueue = [];
+      this.isBatching = false;
+      // And then rethrow.
+      throw e;
+    }
   }
 
   modifyEntityField(entity: Reference<keyof Entities>, key: string, value: any) {
