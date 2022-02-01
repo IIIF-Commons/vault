@@ -3,7 +3,7 @@
 import { AllActions, Entities, IIIFStore, NormalizedEntity, ReduxStore, RequestState } from './types';
 import { CollectionNormalized, ManifestNormalized, Reference } from '@iiif/presentation-3';
 import { serialize, SerializeConfig, serializeConfigPresentation2, serializeConfigPresentation3 } from '@iiif/parser';
-import { entityActions, metaActions } from './actions';
+import { BATCH_ACTIONS, BatchAction, batchActions, entityActions, metaActions } from './actions';
 import { createFetchHelper, areInputsEqual } from './utility';
 import { createStore } from './store';
 import mitt, { Emitter } from 'mitt';
@@ -22,6 +22,8 @@ export class Vault {
   private readonly options: VaultOptions;
   private readonly store: ReduxStore;
   private readonly emitter: Emitter<any>;
+  private isBatching = false;
+  private batchQueue: AllActions[] = [];
   remoteFetcher: (str: string, options?: any) => Promise<NormalizedEntity | undefined>;
   staticFetcher: (str: string, json: any) => Promise<NormalizedEntity | undefined>;
 
@@ -53,6 +55,14 @@ export class Vault {
     return fetch(url).then((r) => r.json());
   };
 
+  batch(cb: (vault: this) => void) {
+    this.isBatching = true;
+    cb(this);
+    this.store.dispatch(batchActions({ actions: this.batchQueue }));
+    this.batchQueue = [];
+    this.isBatching = false;
+  }
+
   modifyEntityField(entity: Reference<keyof Entities>, key: string, value: any) {
     this.store.dispatch(
       entityActions.modifyEntityField({
@@ -65,13 +75,24 @@ export class Vault {
   }
 
   dispatch(action: any) {
-    this.store.dispatch(action);
+    if (!this.isBatching) {
+      this.store.dispatch(action);
+    }
   }
 
   middleware =
     (store: ReduxStore) =>
-    (next: (action: AllActions) => IIIFStore) =>
-    (action: AllActions): IIIFStore => {
+    (next: (action: AllActions | BatchAction) => IIIFStore) =>
+    (action: AllActions | BatchAction): IIIFStore => {
+      if (action.type === BATCH_ACTIONS) {
+        let state: IIIFStore = store.getState();
+        for (const realAction of action.payload.actions) {
+          this.emitter.emit(realAction.type, { realAction, state: store.getState() });
+          state = next(realAction);
+          this.emitter.emit(`after:${realAction.type}`, { realAction, state: store.getState() });
+        }
+        return state;
+      }
       this.emitter.emit(action.type, { action, state: store.getState() });
       const state = next(action);
       this.emitter.emit(`after:${action.type}`, { action, state: store.getState() });

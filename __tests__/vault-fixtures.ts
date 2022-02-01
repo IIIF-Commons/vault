@@ -1,11 +1,15 @@
 // @ts-ignore
+import nlsManifest from '../fixtures/presentation-2/nls-manifest.json';
+// @ts-ignore
 import nlsManifest2 from '../fixtures/presentation-2/nls-manifest.json';
 import { Vault } from '../src/vault';
+import { ManifestNormalized } from '@iiif/presentation-3';
+import invariant from 'tiny-invariant';
 
 describe('vault', () => {
   test('nls manifest 2', async () => {
     const vault = new Vault();
-    const manifest = await vault.loadManifest(nlsManifest2['@id'], nlsManifest2);
+    const manifest = await vault.loadManifest(nlsManifest['@id'], nlsManifest);
 
     expect(manifest).toMatchInlineSnapshot(`
       Object {
@@ -728,6 +732,33 @@ describe('vault', () => {
         "thumbnail": Array [],
         "type": "Manifest",
         "viewingDirection": "left-to-right",
+      }
+    `);
+  });
+
+  test('batch mutation', async () => {
+    const vault = new Vault();
+    const manifest = await vault.loadManifest(nlsManifest2['@id'], nlsManifest2);
+
+    invariant(manifest);
+
+    vault.batch((v) => {
+      v.modifyEntityField(manifest, 'label', { en: ['TEST LABEL VALUE'] });
+      v.modifyEntityField(manifest, 'summary', { en: ['TEST SUMMARY VALUE'] });
+    });
+
+    expect(vault.get<ManifestNormalized>(manifest.id).label).toMatchInlineSnapshot(`
+      Object {
+        "en": Array [
+          "TEST LABEL VALUE",
+        ],
+      }
+    `);
+    expect(vault.get<ManifestNormalized>(manifest.id).summary).toMatchInlineSnapshot(`
+      Object {
+        "en": Array [
+          "TEST SUMMARY VALUE",
+        ],
       }
     `);
   });

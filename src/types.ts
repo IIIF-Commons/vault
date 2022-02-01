@@ -15,6 +15,7 @@ import { EntityActions } from './actions/entity-actions';
 import { MetaActions } from './actions/meta-actions';
 import { RequestActions } from './actions/request-actions';
 import { Store } from 'redux';
+import { BatchAction } from './actions';
 
 export type MetaState = Record<string, Record<string, Record<string, any>>>;
 
@@ -86,4 +87,4 @@ export type IIIFStore<Meta extends MetaState = MetaState> = {
 
 export type AllActions = MappingActions | RequestActions | EntityActions | MetaActions;
 
-export type ReduxStore = Store<IIIFStore, AllActions>;
+export type ReduxStore = Store<IIIFStore, AllActions | BatchAction>;
