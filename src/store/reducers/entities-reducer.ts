@@ -30,8 +30,8 @@ export const entitiesReducer = (
     };
   }
 
-  const keys = Object.keys(action.payload.entities) as Array<keyof Entities>;
   if (action.type === IMPORT_ENTITIES) {
+    const keys = Object.keys(action.payload.entities) as Array<keyof Entities>;
     const toReturn: Entities = { ...state };
 
     for (const key of keys) {

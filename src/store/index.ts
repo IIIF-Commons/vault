@@ -3,7 +3,8 @@ import { mappingReducer } from './reducers/mapping-reducer';
 import { entitiesReducer } from './reducers/entities-reducer';
 import { requestReducer } from './reducers/request-reducer';
 import { metaReducer } from './reducers/meta-reducer';
-import { ReduxStore } from '../types';
+import { AllActions, ReduxStore } from '../types';
+import { createBatchReducer } from './reducers/batch-reducer';
 
 export const reducers = combineReducers({
   mapping: mappingReducer,
@@ -32,8 +33,10 @@ export function createStore(options: CreateStoreOptions = {}): ReduxStore {
     customReducers = {},
   } = options;
 
+  const rootReducer = combineReducers<AllActions>({ [iiifStoreName]: reducers, ...customReducers });
+
   const store = createReduxStore(
-    combineReducers({ [iiifStoreName]: reducers, ...customReducers }),
+    createBatchReducer(rootReducer),
     defaultState,
     enableDevtools
       ? composeEnhancers(applyMiddleware(...extraMiddleware))
