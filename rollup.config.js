@@ -85,7 +85,7 @@ export default [
     input: './src/index.node.ts',
     distPreset: 'cjs',
     node: true,
-    external: [...external, ...nodeExternal],
+    external: [...external],
   }),
 
   // import {} from '@iiif/vault/actions'
