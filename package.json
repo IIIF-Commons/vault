@@ -11,9 +11,9 @@
   "exports": {
     ".": {
       "node": {
-        "require": "./dist/cjs-node/index.js",
-        "import": "./dist/esm-node/index.mjs",
-        "default": "./dist/cjs-node/index.js"
+        "require": "./dist/cjs-node/index.node.js",
+        "import": "./dist/esm-node/index.node.mjs",
+        "default": "./dist/cjs-node/index.node.js"
       },
       "browser": {
         "require": "./dist/cjs/index.js",
