@@ -70,7 +70,7 @@ export class Vault {
   }
 
   modifyEntityField(entity: Reference<keyof Entities>, key: string, value: any) {
-    this.store.dispatch(
+    this.dispatch(
       entityActions.modifyEntityField({
         id: entity.id,
         type: entity.type,
@@ -83,6 +83,8 @@ export class Vault {
   dispatch(action: any) {
     if (!this.isBatching) {
       this.store.dispatch(action);
+    } else {
+      this.batchQueue.push(action);
     }
   }
 
@@ -239,7 +241,7 @@ export class Vault {
     [id, meta, key]: [string, string, string],
     newValueOrUpdate: Value | ((oldValue: Value | undefined) => Value)
   ) {
-    this.getStore().dispatch(
+    this.dispatch(
       typeof newValueOrUpdate === 'function'
         ? metaActions.setMetaValueDynamic({
             id,
