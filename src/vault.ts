@@ -67,6 +67,24 @@ export class Vault {
       // And then rethrow.
       throw e;
     }
+    this.batchQueue = [];
+    this.isBatching = false;
+  }
+
+  async asyncBatch(cb: (vault: this) => Promise<void> | void) {
+    this.isBatching = true;
+    try {
+      await cb(this);
+      this.store.dispatch(batchActions({ actions: this.batchQueue }));
+    } catch (e) {
+      // Even if we error, we still need to reset the queue.
+      this.batchQueue = [];
+      this.isBatching = false;
+      // And then rethrow.
+      throw e;
+    }
+    this.batchQueue = [];
+    this.isBatching = false;
   }
 
   modifyEntityField(entity: Reference<keyof Entities>, key: string, value: any) {
@@ -93,17 +111,18 @@ export class Vault {
     (next: (action: AllActions | BatchAction) => IIIFStore) =>
     (action: AllActions | BatchAction): IIIFStore => {
       if (action.type === BATCH_ACTIONS) {
-        let state: IIIFStore = store.getState();
         for (const realAction of action.payload.actions) {
           this.emitter.emit(realAction.type, { realAction, state: store.getState() });
-          state = next(realAction);
-          this.emitter.emit(`after:${realAction.type}`, { realAction, state: store.getState() });
+        }
+        const state = next(action);
+        for (const realAction of action.payload.actions) {
+          this.emitter.emit(`after:${action.type}`, { action, state });
         }
         return state;
       }
       this.emitter.emit(action.type, { action, state: store.getState() });
       const state = next(action);
-      this.emitter.emit(`after:${action.type}`, { action, state: store.getState() });
+      this.emitter.emit(`after:${action.type}`, { action, state });
       return state;
     };
 
