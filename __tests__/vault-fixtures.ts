@@ -742,10 +742,17 @@ describe('vault', () => {
 
     invariant(manifest);
 
+    let i = 0;
+    vault.subscribe(() => {
+      i++;
+    }, true);
+
     vault.batch((v) => {
       v.modifyEntityField(manifest, 'label', { en: ['TEST LABEL VALUE'] });
       v.modifyEntityField(manifest, 'summary', { en: ['TEST SUMMARY VALUE'] });
     });
+
+    expect(i).toEqual(1);
 
     expect(vault.get<ManifestNormalized>(manifest.id).label).toMatchInlineSnapshot(`
       Object {

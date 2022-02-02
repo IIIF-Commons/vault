@@ -209,17 +209,32 @@ export class Vault {
   subscribe<T>(
     selector: (state: IIIFStore) => T,
     subscription: (state: T, vault: Vault) => void,
-    skipInitial = false
+    skipInitial: boolean
+  ): () => void;
+  subscribe<T>(subscription: (state: T, vault: Vault) => void, skipInitial?: boolean): () => void;
+  subscribe<T>(
+    selector: ((state: IIIFStore) => T) | ((state: T, vault: Vault) => void),
+    subscription?: ((state: T, vault: Vault) => void) | boolean,
+    skipInitial?: boolean
   ): () => void {
-    let lastState: T | null = skipInitial ? null : selector(this.store.getState());
+    if (
+      typeof skipInitial === 'undefined' &&
+      (typeof subscription === 'undefined' || subscription === false || subscription === true)
+    ) {
+      skipInitial = subscription;
+      subscription = selector as any;
+      selector = (a: any) => a;
+    }
+
+    let lastState: T | null = skipInitial ? null : (selector as any)(this.store.getState());
     if (!skipInitial) {
-      subscription(lastState as any, this);
+      (subscription as any)(lastState as any, this);
     }
     return this.store.subscribe(() => {
       const state = this.store.getState();
-      const selectedState = selector(state);
+      const selectedState = (selector as any)(state);
       if (!areInputsEqual(lastState, selectedState)) {
-        subscription(selectedState, this);
+        (subscription as any)(selectedState, this);
       }
       lastState = selectedState;
     });
