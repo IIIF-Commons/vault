@@ -1,8 +1,6 @@
 # Vault
 
-**Current v0.9 waiting for feedback before 1.0. Roadmap for 1.0**
-- [ ] Batch actions
-- [ ] 
+**Current v0.9 waiting for feedback before 1.0**
 
 [Docs to be written]
 
