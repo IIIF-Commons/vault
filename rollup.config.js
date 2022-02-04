@@ -1,10 +1,29 @@
 import { createRollupConfig, createTypeConfig } from 'rollup-library-template';
+import replace from '@rollup/plugin-replace';
 
 const baseConfig = {
   filesize: true,
   minify: true,
   extra: {
     treeshake: true,
+  },
+  esbuildOptions: {
+    define: {
+      'process.env.NODE_ENV': 'true',
+    },
+  },
+  postProcess: (config) => {
+    config.plugins = [
+      replace({
+        values: {
+          'process.env.NODE_ENV': 'true',
+        },
+        preventAssignment: false,
+      }),
+      ...config.plugins,
+    ];
+
+    return config;
   },
 };
 
@@ -85,7 +104,7 @@ export default [
     input: './src/index.node.ts',
     distPreset: 'cjs',
     node: true,
-    external: [...external],
+    external: [...external, ...nodeExternal],
   }),
 
   // import {} from '@iiif/vault/actions'
