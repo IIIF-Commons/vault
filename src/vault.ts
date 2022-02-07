@@ -16,6 +16,8 @@ export type VaultOptions = {
   enableDevtools: boolean;
 };
 
+export type GetOptions = { skipSelfReturn?: boolean };
+
 export type EntityRef<Ref extends keyof Entities> = IIIFStore['iiif']['entities'][Ref][string];
 
 export class Vault {
@@ -138,15 +140,46 @@ export class Vault {
     return this.serialize<Return>(entity, serializeConfigPresentation3);
   }
 
-  get<Entity extends EntityRef<any>>(
+  hydrate<Entity extends EntityRef<any>>(
     reference: string[] | Reference<any>[] | NormalizedEntity[],
     type?: string
   ): Entity[];
-  get<Entity extends EntityRef<any>>(reference: string | Reference<any> | NormalizedEntity, type?: string): Entity;
-  get<Entity extends EntityRef<any>>(
+  hydrate<Entity extends EntityRef<any>>(reference: string[] | Reference<any>[] | NormalizedEntity[]): Entity[];
+  hydrate<Entity extends EntityRef<any>>(reference: string | Reference<any> | NormalizedEntity, type?: string): Entity;
+  hydrate<Entity extends EntityRef<any>>(reference: string | Reference<any> | NormalizedEntity): Entity;
+  hydrate<Entity extends EntityRef<any>>(
     reference: string | Reference<any> | NormalizedEntity | string[] | Reference<any>[] | NormalizedEntity[],
     type?: string
   ): Entity | Entity[] {
+    return this.get<Entity>(reference as any, type as any, { skipSelfReturn: false });
+  }
+
+  get<Entity extends EntityRef<any>>(
+    reference: string[] | Reference<any>[] | NormalizedEntity[],
+    type?: string,
+    opt?: GetOptions
+  ): Entity[];
+  get<Entity extends EntityRef<any>>(
+    reference: string[] | Reference<any>[] | NormalizedEntity[],
+    opt?: GetOptions
+  ): Entity[];
+  get<Entity extends EntityRef<any>>(
+    reference: string | Reference<any> | NormalizedEntity,
+    type?: string,
+    opt?: GetOptions
+  ): Entity;
+  get<Entity extends EntityRef<any>>(reference: string | Reference<any> | NormalizedEntity, opt?: GetOptions): Entity;
+  get<Entity extends EntityRef<any>>(
+    reference: string | Reference<any> | NormalizedEntity | string[] | Reference<any>[] | NormalizedEntity[],
+    type?: string | GetOptions,
+    options: GetOptions = {}
+  ): Entity | Entity[] {
+    if (typeof type !== 'string') {
+      options = type || {};
+    }
+
+    const { skipSelfReturn = true } = options || {};
+
     // Multiples.
     if (Array.isArray(reference)) {
       return (reference as any[]).map((i) => this.get(i)) as EntityRef<any>[];
@@ -158,6 +191,9 @@ export class Vault {
     if (typeof reference === 'string') {
       const _type: any = type ? type : state.iiif.mapping[reference];
       if (!_type) {
+        if (skipSelfReturn) {
+          return null as any;
+        }
         return { id: reference, type: 'unknown' } as any;
       }
       reference = { id: reference, type: _type };
@@ -166,10 +202,13 @@ export class Vault {
     const _type = type ? type : (reference as any).type;
     const entities = (state.iiif.entities as any)[_type];
     if (!entities) {
+      if (skipSelfReturn) {
+        return null as any;
+      }
       return reference as any;
     }
 
-    return entities[(reference as any).id] || reference;
+    return entities[(reference as any).id] || (skipSelfReturn ? null : reference);
   }
 
   select<R>(selector: (state: IIIFStore) => R): R {

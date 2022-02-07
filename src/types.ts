@@ -16,6 +16,7 @@ import { MetaActions } from './actions/meta-actions';
 import { RequestActions } from './actions/request-actions';
 import { Store } from 'redux';
 import { BatchAction } from './actions';
+import { ResourceProviderNormalized } from '@iiif/presentation-3/resources/provider';
 
 export type MetaState = Record<string, Record<string, Record<string, any>>>;
 
@@ -39,6 +40,7 @@ export type NormalizedEntity =
   | ContentResource
   | RangeNormalized
   | ServiceNormalized
+  | ResourceProviderNormalized
   | Selector;
 
 export type Entities = {
@@ -71,6 +73,9 @@ export type Entities = {
   };
   Selector: {
     [id: string]: Selector;
+  };
+  Agent: {
+    [id: string]: ResourceProviderNormalized;
   };
 };
 

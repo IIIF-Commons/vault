@@ -12,5 +12,6 @@ export function getDefaultEntities(): Entities {
     Range: {},
     Service: {},
     Selector: {},
+    Agent: {},
   };
 }
