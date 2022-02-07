@@ -9,14 +9,14 @@ const baseConfig = {
   },
   esbuildOptions: {
     define: {
-      'process.env.NODE_ENV': 'true',
+      'process.env.NODE_ENV': '"production"',
     },
   },
   postProcess: (config) => {
     config.plugins = [
       replace({
         values: {
-          'process.env.NODE_ENV': 'true',
+          'process.env.NODE_ENV': '"production"',
         },
         preventAssignment: false,
       }),
@@ -30,6 +30,19 @@ const baseConfig = {
 const external = ['@iiif/parser', 'redux', 'typesafe-actions'];
 const bundled = ['mitt'];
 const nodeExternal = ['node-fetch'];
+const nodeCjsExternal = [
+  'node:https',
+  'node:buffer',
+  'node:stream',
+  'node:zlib',
+  'node:http',
+  'node:util',
+  'node:url',
+  'node:net',
+  'node:path',
+  'node:fs',
+  'node:worker_threads',
+];
 
 // Roll up configs
 export default [
@@ -104,7 +117,7 @@ export default [
     input: './src/index.node.ts',
     distPreset: 'cjs',
     node: true,
-    external: [...external, ...nodeExternal],
+    external: [...external, ...nodeCjsExternal],
   }),
 
   // import {} from '@iiif/vault/actions'

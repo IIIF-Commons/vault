@@ -19,7 +19,7 @@ describe('vault', () => {
         "behavior": Array [
           "paged",
         ],
-        "homepage": null,
+        "homepage": Array [],
         "id": "https://view.nls.uk/manifest/1286/9359/128693590/manifest.json",
         "items": Array [
           Object {
@@ -768,5 +768,19 @@ describe('vault', () => {
         ],
       }
     `);
+  });
+
+  test('skipSelfReturn', () => {
+    const vault = new Vault();
+
+    expect(vault.get({ id: 'https://example.org/not-in-vault', type: 'Manifest' }, { skipSelfReturn: false })).toEqual({
+      id: 'https://example.org/not-in-vault',
+      type: 'Manifest',
+    });
+
+    expect(vault.get({ id: 'https://example.org/not-in-vault', type: 'Manifest' }, { skipSelfReturn: true })).toEqual(
+      null
+    );
+    expect(vault.get('https://example.org/not-in-vault', 'Manifest', { skipSelfReturn: true })).toEqual(null);
   });
 });
