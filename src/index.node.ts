@@ -10,3 +10,5 @@ export class Vault extends Lib.Vault {
     return fetch(url).then((r) => r.json());
   };
 }
+
+export * from './types';
