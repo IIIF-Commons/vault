@@ -17,7 +17,7 @@
       },
       "browser": {
         "require": "./dist/cjs/index.js",
-        "import": "./dist/esm/index.js",
+        "import": "./dist/esm/index.mjs",
         "default": "./dist/index.umd.js"
       }
     },
