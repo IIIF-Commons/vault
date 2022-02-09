@@ -129,7 +129,7 @@ export class Vault {
     };
 
   serialize<Return>(entity: Reference<keyof Entities>, config: SerializeConfig) {
-    return serialize<Return>(this.getState() as any, entity, config);
+    return serialize<Return>(this.getState().iiif, entity, config);
   }
 
   toPresentation2<Return>(entity: Reference<keyof Entities>) {
