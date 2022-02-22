@@ -1,7 +1,6 @@
-import { ActionType } from 'typesafe-actions';
-import { ADD_MAPPING, ADD_MAPPINGS, mappingActions } from '../../actions';
+import { MappingActions, ADD_MAPPING, ADD_MAPPINGS } from '../../actions';
 
-export const mappingReducer = (state: Record<string, string> = {}, action: ActionType<typeof mappingActions> | any) => {
+export const mappingReducer = (state: Record<string, string> = {}, action: MappingActions) => {
   switch (action.type) {
     case ADD_MAPPING:
       return {
