@@ -1,18 +1,17 @@
 import {
+  RequestActions,
   REQUEST_COMPLETE,
   REQUEST_ERROR,
   REQUEST_MISMATCH,
   REQUEST_OFFLINE_RESOURCE,
   REQUEST_RESOURCE,
-  requestActions,
   RESOURCE_ERROR,
   RESOURCE_LOADING,
   RESOURCE_READY,
 } from '../../actions';
-import { ActionType } from 'typesafe-actions';
 import { RequestState } from '../../types';
 
-export const requestReducer = (state: RequestState = {}, action: ActionType<typeof requestActions>) => {
+export const requestReducer = (state: RequestState = {}, action: RequestActions) => {
   switch (action.type) {
     case REQUEST_RESOURCE:
     case REQUEST_OFFLINE_RESOURCE:

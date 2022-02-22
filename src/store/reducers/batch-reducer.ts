@@ -1,4 +1,4 @@
-import { BATCH_ACTIONS, BatchAction } from '../../actions/batch-actions';
+import { BatchAction, BATCH_ACTIONS } from '../../actions/batch-actions';
 import { AllActions } from '../../types';
 import { Reducer } from 'redux';
 
