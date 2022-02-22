@@ -204,6 +204,37 @@ describe('Store', function () {
           },
         ]
       `);
+
+      store.dispatch(
+        entityActions.removeReference({
+          id: 'https://example.org/manifest-1',
+          type: 'Manifest',
+          key: 'items',
+          reference: {
+            id: 'https://example.org/manifest-1/canvas-2',
+            type: 'Canvas',
+          },
+          index: 3, // <-- THIS IS THE INCORRECT INDEX, CANVAS 2 IS AT INDEX 2
+        })
+      );
+      expect(store.getState().iiif.entities.Manifest['https://example.org/manifest-1'].items).toHaveLength(3);
+
+      store.dispatch(
+        entityActions.removeReference({
+          id: 'https://example.org/manifest-1',
+          type: 'Manifest',
+          key: 'items',
+          reference: {
+            id: 'https://example.org/manifest-1/canvas-2',
+            type: 'Canvas',
+          },
+          index: 2, // <-- THIS IS THE CORRECT INDEX
+        })
+      );
+      expect(store.getState().iiif.entities.Manifest['https://example.org/manifest-1'].items).toHaveLength(2);
+
+
+
     });
   });
 });

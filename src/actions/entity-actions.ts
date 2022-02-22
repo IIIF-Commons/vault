@@ -40,6 +40,7 @@ export const removeReference = createAction(REMOVE_REFERENCE)<{
   type: keyof Entities;
   id: string;
   key: string;
+  index?: number;
   reference: { id: string; type: string } & any;
 }>();
 

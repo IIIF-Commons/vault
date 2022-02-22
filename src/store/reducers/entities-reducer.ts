@@ -94,10 +94,15 @@ export const entitiesReducer = (state: Entities = getDefaultEntities(), action: 
 
       const entity: any = state[action.payload.type][action.payload.id];
       const result = Array.from(entity[action.payload.key]);
-      const indexToRemove = result.findIndex((e: any) => e && e.id === action.payload.reference.id);
+      const indexToRemove =
+        action.payload.index || result.findIndex((e: any) => e && e.id === action.payload.reference.id);
 
       if (indexToRemove === -1) {
         // Nothing to remove.
+        return state;
+      }
+      if ((result as any[])[indexToRemove]?.id !== action.payload.reference.id) {
+        // Invalid entity at this position, or the ID does not match.
         return state;
       }
 
