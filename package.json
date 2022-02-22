@@ -1,6 +1,6 @@
 {
   "name": "@iiif/vault",
-  "version": "0.9.11",
+  "version": "0.9.12",
   "license": "MIT",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.mjs",
