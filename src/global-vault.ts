@@ -1,21 +1,9 @@
 import * as vaultModule from './vault';
+import { getGlobal } from './utility/get-global';
 
 declare global {
   const IIIF_VAULT: vaultModule.Vault;
   const IIIFVault: typeof vaultModule;
-}
-
-function getGlobal(): any {
-  if (typeof self !== 'undefined') {
-    return self;
-  }
-  if (typeof window !== 'undefined') {
-    return window;
-  }
-  if (typeof global !== 'undefined') {
-    return global;
-  }
-  return {};
 }
 
 export function globalVault(options?: vaultModule.VaultOptions) {
