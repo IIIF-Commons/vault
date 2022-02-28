@@ -182,7 +182,7 @@ export class Vault {
 
     // Multiples.
     if (Array.isArray(reference)) {
-      return (reference as any[]).map((i) => this.get(i)) as EntityRef<any>[];
+      return (reference as any[]).map((i) => this.get(i, options)) as EntityRef<any>[];
     }
 
     const state = this.getState();
@@ -200,8 +200,14 @@ export class Vault {
     }
 
     const _type = type ? type : (reference as any).type;
+    const _id = (reference as any).id;
     const entities = (state.iiif.entities as any)[_type];
     if (!entities) {
+      const request = state.iiif.requests[_id];
+      if (request && request.resourceUri !== _id) {
+        return this.get(request.resourceUri, options);
+      }
+
       if (skipSelfReturn) {
         return null as any;
       }
