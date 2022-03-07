@@ -2,7 +2,14 @@ import { actionListFromResource } from './action-list-from-resource';
 import { Unsubscribe } from 'redux';
 import { resolveIfExists } from './resolve-if-exists';
 import { NormalizedEntity, ReduxStore } from '../types';
-import { requestError, requestResource, RESOURCE_ERROR, RESOURCE_LOADING, RESOURCE_READY } from '../actions';
+import {
+  batchActions,
+  requestError,
+  requestResource,
+  RESOURCE_ERROR,
+  RESOURCE_LOADING,
+  RESOURCE_READY
+} from "../actions";
 
 export function createFetchHelper<T>(
   store: ReduxStore,
@@ -88,9 +95,7 @@ export function createFetchHelper<T>(
     try {
       const resource = await fetcher(url, options);
       const toDispatch = actionListFromResource(url, resource);
-      for (const action of toDispatch) {
-        store.dispatch(action);
-      }
+      store.dispatch(batchActions({ actions: toDispatch }));
       return resolveIfExists(store.getState(), url);
     } catch (err) {
       store.dispatch(requestError({ id: url, message: (err as any).toString() }));
