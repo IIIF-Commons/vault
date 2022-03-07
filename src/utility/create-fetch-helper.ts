@@ -8,8 +8,8 @@ import {
   requestResource,
   RESOURCE_ERROR,
   RESOURCE_LOADING,
-  RESOURCE_READY
-} from "../actions";
+  RESOURCE_READY,
+} from '../actions';
 
 export function createFetchHelper<T>(
   store: ReduxStore,
@@ -94,6 +94,16 @@ export function createFetchHelper<T>(
     store.dispatch(requestResource({ id: url }));
     try {
       const resource = await fetcher(url, options);
+      if (!resource.id && !resource['@id']) {
+        if (resource['@type']) {
+          // assume it might be presentation 2.
+          resource['@id'] = url;
+          resource.id = url;
+        } else {
+          // assume presentation 3.
+          resource.id = url;
+        }
+      }
       const toDispatch = actionListFromResource(url, resource);
       store.dispatch(batchActions({ actions: toDispatch }));
       return resolveIfExists(store.getState(), url);

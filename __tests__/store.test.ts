@@ -233,8 +233,6 @@ describe('Store', function () {
       );
       expect(store.getState().iiif.entities.Manifest['https://example.org/manifest-1'].items).toHaveLength(2);
 
-
-
     });
   });
 });
