@@ -58,12 +58,12 @@
     "test": "jest"
   },
   "resolutions": {
-    "@iiif/presentation-3": "^1.0.3"
+    "@iiif/presentation-3": "^1.0.4"
   },
   "dependencies": {
-    "@iiif/parser": "^1.0.2",
+    "@iiif/parser": "^1.0.6",
     "@iiif/presentation-2": "^1.0.1",
-    "@iiif/presentation-3": "^1.0.3",
+    "@iiif/presentation-3": "^1.0.4",
     "mitt": "^3.0.0",
     "node-fetch": "^3.1.1",
     "redux": "^4.1.2",
