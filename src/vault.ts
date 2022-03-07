@@ -176,6 +176,7 @@ export class Vault {
   ): Entity | Entity[] {
     if (typeof type !== 'string') {
       options = type || {};
+      type = undefined;
     }
 
     const { skipSelfReturn = true } = options || {};

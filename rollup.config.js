@@ -1,22 +1,25 @@
 import { createRollupConfig, createTypeConfig } from 'rollup-library-template';
 import replace from '@rollup/plugin-replace';
+import process from 'process';
+
+const DEV = process.argv.indexOf('--dev') === -1;
 
 const baseConfig = {
   filesize: true,
-  minify: true,
+  minify: !DEV,
   extra: {
     treeshake: true,
   },
   esbuildOptions: {
     define: {
-      'process.env.NODE_ENV': '"production"',
+      'process.env.NODE_ENV': DEV ? '"development"' : '"production"',
     },
   },
   postProcess: (config) => {
     config.plugins = [
       replace({
         values: {
-          'process.env.NODE_ENV': '"production"',
+          'process.env.NODE_ENV': DEV ? '"development"' : '"production"',
         },
         preventAssignment: false,
       }),
