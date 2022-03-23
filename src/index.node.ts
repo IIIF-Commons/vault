@@ -1,15 +1,19 @@
 import fetch from 'node-fetch';
 import * as Lib from './vault';
-import { Entities } from './types';
+import { Entities, ReduxStore } from './types';
 import { getGlobal } from './utility/get-global';
 
 export type VaultOptions = Lib.VaultOptions;
 export type EntityRef<Ref extends keyof Entities> = Lib.EntityRef<Ref>;
 
 export class Vault extends Lib.Vault {
-  defaultFetcher = (url: string) => {
-    return fetch(url).then((r) => r.json());
-  };
+  constructor(options?: Partial<VaultOptions>, store?: ReduxStore) {
+    const _options = options || {};
+    _options.customFetcher = (url: string) => {
+      return fetch(url).then((r) => r.json());
+    };
+    super(_options, store);
+  }
 }
 
 export function globalVault(options?: VaultOptions) {
