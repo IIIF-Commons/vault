@@ -187,6 +187,9 @@ export class Vault {
     }
 
     const state = this.getState();
+        if (!reference) {
+      return [];
+    }
 
     // String IDs.
     if (typeof reference === 'string') {
