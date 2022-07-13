@@ -4,8 +4,10 @@
   "license": "MIT",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.mjs",
+  "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "npm"
   ],
   "exports": {
     ".": {
@@ -19,6 +21,11 @@
         "import": "./dist/esm/index.mjs",
         "default": "./dist/index.umd.js"
       }
+    },
+    "./global-vault": {
+      "require": "./npm/global-vault.js",
+      "import": "./npm/global-vault.mjs",
+      "default": "./npm/global-vault.js"
     },
     "./actions": {
       "require": "./dist/actions/cjs/index.js",

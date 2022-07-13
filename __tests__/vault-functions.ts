@@ -13,5 +13,59 @@ describe('Vault functions', () => {
 
     expect(ref!.id).toEqual('https://example.org/annotation1');
     expect(vault.get('https://example.org/annotation1')).toBeDefined();
+
+    expect(vault.getState().iiif.requests).toMatchInlineSnapshot(`
+      Object {
+        "https://example.org/annotation1": Object {
+          "error": undefined,
+          "loadingState": "RESOURCE_READY",
+          "requestUri": "https://example.org/annotation1",
+          "resourceUri": "https://example.org/annotation1",
+          "uriMismatch": false,
+        },
+      }
+    `);
+  });
+
+  test('Loading multiple with an ID', async () => {
+    const vault = new Vault();
+
+    const ref1 = await vault.load<AnnotationNormalized>('https://example.org/annotation1', {
+      id: 'https://example.org/annotation1',
+      type: 'Annotation',
+      motivation: ['bookmarking'],
+      target: 'https://example.org/some-manifest',
+    });
+
+    const ref2 = await vault.load<AnnotationNormalized>('https://example.org/annotation2', {
+      id: 'https://example.org/annotation2',
+      type: 'Annotation',
+      motivation: ['bookmarking'],
+      target: 'https://example.org/some-manifest',
+    });
+
+    expect(ref1!.id).toEqual('https://example.org/annotation1');
+    expect(ref2!.id).toEqual('https://example.org/annotation2');
+    expect(vault.get('https://example.org/annotation1')).toBeDefined();
+    expect(vault.get('https://example.org/annotation2')).toBeDefined();
+
+    expect(vault.getState().iiif.requests).toMatchInlineSnapshot(`
+      Object {
+        "https://example.org/annotation1": Object {
+          "error": undefined,
+          "loadingState": "RESOURCE_READY",
+          "requestUri": "https://example.org/annotation1",
+          "resourceUri": "https://example.org/annotation1",
+          "uriMismatch": false,
+        },
+        "https://example.org/annotation2": Object {
+          "error": undefined,
+          "loadingState": "RESOURCE_READY",
+          "requestUri": "https://example.org/annotation2",
+          "resourceUri": "https://example.org/annotation2",
+          "uriMismatch": false,
+        },
+      }
+    `);
   });
 });

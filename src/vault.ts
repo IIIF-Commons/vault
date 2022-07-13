@@ -279,7 +279,7 @@ export class Vault {
     return this.store.subscribe(() => {
       const state = this.store.getState();
       const selectedState = (selector as any)(state);
-      if (!areInputsEqual(lastState, selectedState)) {
+      if (lastState !== selectedState && !areInputsEqual(lastState, selectedState)) {
         (subscription as any)(selectedState, this);
       }
       lastState = selectedState;
