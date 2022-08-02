@@ -30,8 +30,7 @@ const baseConfig = {
   },
 };
 
-const external = ['@iiif/parser', 'redux', 'typesafe-actions'];
-const bundled = ['mitt'];
+const external = ['@iiif/parser'];
 const nodeExternal = ['node-fetch'];
 const nodeCjsExternal = [
   'node:https',

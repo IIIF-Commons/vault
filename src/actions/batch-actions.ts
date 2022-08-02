@@ -1,4 +1,5 @@
-import { ActionType, createAction } from 'typesafe-actions';
+import { ActionType } from 'typesafe-actions';
+import { createAction } from '../utility/typesafe-actions-runtime';
 import { AllActions, EntityStore } from '../types';
 
 export const BATCH_ACTIONS = '@iiif/BATCH';

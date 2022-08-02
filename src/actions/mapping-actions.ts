@@ -1,4 +1,5 @@
-import { ActionType, createAction } from 'typesafe-actions';
+import { ActionType } from 'typesafe-actions';
+import { createAction } from '../utility/typesafe-actions-runtime';
 
 export const ADD_MAPPING = '@iiif/ADD_MAPPING';
 export const ADD_MAPPINGS = '@iiif/ADD_MAPPINGS';

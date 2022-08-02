@@ -1,4 +1,6 @@
-import { ActionType, createAction } from 'typesafe-actions';
+import { ActionType } from 'typesafe-actions';
+import { createAction } from '../utility/typesafe-actions-runtime';
+
 import { Entities } from '../types';
 
 export const IMPORT_ENTITIES = '@iiif/IMPORT_ENTITIES';

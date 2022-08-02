@@ -14,7 +14,7 @@ import { MappingActions } from './actions/mapping-actions';
 import { EntityActions } from './actions/entity-actions';
 import { MetaActions } from './actions/meta-actions';
 import { RequestActions } from './actions/request-actions';
-import { Store } from 'redux';
+import { Action, AnyAction, Store } from 'redux';
 import { BatchAction } from './actions';
 import { ResourceProviderNormalized } from '@iiif/presentation-3/resources/provider';
 
@@ -93,3 +93,5 @@ export type IIIFStore<Meta extends MetaState = MetaState> = {
 export type AllActions = MappingActions | RequestActions | EntityActions | MetaActions;
 
 export type ReduxStore = Store<IIIFStore, AllActions | BatchAction>;
+
+export type Reducer<S = any, A extends Action = AnyAction> = (state: S, action: A) => S;

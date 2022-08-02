@@ -10,9 +10,10 @@ import {
   RESOURCE_LOADING,
   RESOURCE_READY,
 } from '../actions';
+import { VaultZustandStore } from '../store/zustand';
 
 export function createFetchHelper<T>(
-  store: ReduxStore,
+  store: ReduxStore | VaultZustandStore,
   fetcher: (url: string, options?: T) => any | Promise<any>,
   { waitTimeout = 30 }: { waitTimeout?: number } = {}
 ) {
@@ -57,7 +58,7 @@ export function createFetchHelper<T>(
                 setTimeout(() => {
                   didContinue = true;
                   reject();
-                }, waitTimeout * 60)
+                }, waitTimeout * 60 * 1000)
               ),
             ]);
             if (cleanupSubscription) {

@@ -1,17 +1,16 @@
 /// <reference types="geojson" />
 
-import { AllActions, Entities, IIIFStore, NormalizedEntity, ReduxStore, RequestState } from './types';
+import { AllActions, Entities, IIIFStore, NormalizedEntity, RequestState } from './types';
 import { CollectionNormalized, ManifestNormalized, Reference } from '@iiif/presentation-3';
 import { serialize, SerializeConfig, serializeConfigPresentation2, serializeConfigPresentation3 } from '@iiif/parser';
 import { BATCH_ACTIONS, BatchAction, batchActions, entityActions, metaActions } from './actions';
 import { createFetchHelper, areInputsEqual } from './utility';
-import { createStore } from './store';
+import { createStore, VaultZustandStore } from './store/zustand';
 import mitt, { Emitter } from 'mitt';
 
 export type VaultOptions = {
   reducers: Record<string, any>;
-  middleware: [];
-  defaultState: any;
+  defaultState?: IIIFStore;
   customFetcher: <T>(url: string, options: T) => unknown | Promise<unknown>;
   enableDevtools: boolean;
 };
@@ -22,19 +21,17 @@ export type EntityRef<Ref extends keyof Entities> = IIIFStore['iiif']['entities'
 
 export class Vault {
   private readonly options: VaultOptions;
-  private readonly store: ReduxStore;
+  private readonly store: VaultZustandStore;
   private readonly emitter: Emitter<any>;
   private isBatching = false;
   private batchQueue: AllActions[] = [];
   remoteFetcher: (str: string, options?: any) => Promise<NormalizedEntity | undefined>;
   staticFetcher: (str: string, json: any) => Promise<NormalizedEntity | undefined>;
 
-  constructor(options?: Partial<VaultOptions>, store?: ReduxStore) {
+  constructor(options?: Partial<VaultOptions>, store?: VaultZustandStore) {
     this.options = Object.assign(
       {
         reducers: {},
-        middleware: [],
-        defaultState: {},
         customFetcher: this.defaultFetcher,
         enableDevtools: true,
       },
@@ -44,7 +41,6 @@ export class Vault {
       store ||
       createStore({
         customReducers: this.options.reducers,
-        extraMiddleware: [...this.options.middleware, this.middleware],
         defaultState: this.options.defaultState,
         enableDevtools: this.options.enableDevtools,
       });
@@ -109,7 +105,7 @@ export class Vault {
   }
 
   middleware =
-    (store: ReduxStore) =>
+    (store: VaultZustandStore) =>
     (next: (action: AllActions | BatchAction) => IIIFStore) =>
     (action: AllActions | BatchAction): IIIFStore => {
       if (action.type === BATCH_ACTIONS) {
@@ -222,7 +218,7 @@ export class Vault {
     return selector(this.getState());
   }
 
-  getStore(): ReduxStore {
+  getStore(): VaultZustandStore {
     return this.store;
   }
 
@@ -272,17 +268,9 @@ export class Vault {
       selector = (a: any) => a;
     }
 
-    let lastState: T | null = skipInitial ? null : (selector as any)(this.store.getState());
-    if (!skipInitial) {
-      (subscription as any)(lastState as any, this);
-    }
-    return this.store.subscribe(() => {
-      const state = this.store.getState();
-      const selectedState = (selector as any)(state);
-      if (lastState !== selectedState && !areInputsEqual(lastState, selectedState)) {
-        (subscription as any)(selectedState, this);
-      }
-      lastState = selectedState;
+    return this.store.subscribe(selector as any, (s) => (subscription as any)(s, this), {
+      equalityFn: areInputsEqual,
+      fireImmediately: !skipInitial,
     });
   }
 

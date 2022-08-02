@@ -1,9 +1,8 @@
 import { BatchAction, BATCH_ACTIONS, BATCH_IMPORT } from '../../actions/batch-actions';
-import { AllActions } from '../../types';
-import { Reducer } from 'redux';
+import { AllActions, IIIFStore, Reducer } from '../../types';
 
-export function createBatchReducer(rootReducer: Reducer<AllActions>) {
-  return (state: any, action: BatchAction | AllActions) => {
+export function createBatchReducer(rootReducer: Reducer<IIIFStore, AllActions>) {
+  return ((state: IIIFStore, action: BatchAction | AllActions) => {
     if (action && action.type === BATCH_ACTIONS) {
       return action.payload.actions.reduce(rootReducer, state);
     }
@@ -13,5 +12,5 @@ export function createBatchReducer(rootReducer: Reducer<AllActions>) {
     }
 
     return rootReducer(state, action);
-  };
+  }) as Reducer<IIIFStore, AllActions | BatchAction>;
 }

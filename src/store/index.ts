@@ -36,7 +36,7 @@ export function createStore(options: CreateStoreOptions = {}): ReduxStore {
   const rootReducer = combineReducers<AllActions>({ [iiifStoreName]: reducers, ...customReducers });
 
   const store = createReduxStore(
-    createBatchReducer(rootReducer),
+    createBatchReducer(rootReducer as any) as any,
     defaultState,
     enableDevtools
       ? composeEnhancers(applyMiddleware(...extraMiddleware))

@@ -1,4 +1,5 @@
-import { ActionType, createAction } from 'typesafe-actions';
+import { ActionType } from 'typesafe-actions';
+import { createAction } from '../utility/typesafe-actions-runtime';
 
 export const RESOURCE_ERROR = 'RESOURCE_ERROR';
 export const RESOURCE_LOADING = 'RESOURCE_LOADING';

@@ -1,4 +1,5 @@
-import { ActionType, createAction } from 'typesafe-actions';
+import { ActionType } from 'typesafe-actions';
+import { createAction } from '../utility/typesafe-actions-runtime';
 
 export const SET_META_VALUE = '@iiif/SET_META_VALUE';
 export const SET_META_VALUE_DYNAMIC = '@iiif/SET_META_VALUE_DYNAMIC';
