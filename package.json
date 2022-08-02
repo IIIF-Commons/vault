@@ -57,6 +57,7 @@
   },
   "scripts": {
     "build": "node scripts/build.mjs",
+    "test": "vitest",
     "prepublishOnly": "node ./scripts/build.mjs && node scripts/validate.mjs"
   },
   "dependencies": {
