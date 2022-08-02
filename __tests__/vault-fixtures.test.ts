@@ -21,6 +21,13 @@ describe('vault', () => {
         ],
         "homepage": [],
         "id": "https://view.nls.uk/manifest/1286/9359/128693590/manifest.json",
+        "iiif-parser:hasPart": [
+          {
+            "id": "https://view.nls.uk/manifest/1286/9359/128693590/manifest.json",
+            "iiif-parser:partOf": "https://view.nls.uk/manifest/1286/9359/128693590/manifest.json",
+            "type": "Manifest",
+          },
+        ],
         "items": [
           {
             "id": "https://view.nls.uk/iiif/1286/9359/128693590/canvas/1",
