@@ -22,7 +22,8 @@
     "outDir": "./.build/types",
     "declaration": true,
     "emitDeclarationOnly": true,
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "types": ["vitest/globals"]
   },
   "include": [
     "./src/**/*",

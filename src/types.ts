@@ -1,22 +1,24 @@
-import {
-  AnnotationCollection,
-  AnnotationNormalized,
-  AnnotationPageNormalized,
-  CanvasNormalized,
-  CollectionNormalized,
-  ContentResource,
-  ManifestNormalized,
-  RangeNormalized,
-  Selector,
-  ServiceNormalized,
-} from '@iiif/presentation-3';
+import { AnnotationCollection, ContentResource, Selector } from '@iiif/presentation-3';
 import { MappingActions } from './actions/mapping-actions';
 import { EntityActions } from './actions/entity-actions';
 import { MetaActions } from './actions/meta-actions';
 import { RequestActions } from './actions/request-actions';
-import { Action, AnyAction, Store } from 'redux';
-import { BatchAction } from './actions';
-import { ResourceProviderNormalized } from '@iiif/presentation-3/resources/provider';
+import {
+  AnnotationNormalized,
+  AnnotationPageNormalized,
+  CanvasNormalized,
+  CollectionNormalized,
+  ManifestNormalized,
+  RangeNormalized,
+  ResourceProviderNormalized,
+} from '@iiif/presentation-3-normalized';
+import { _ServiceNormalized } from '@iiif/parser';
+
+declare global {
+  // Work around for something else.
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface A {}
+}
 
 export type MetaState = Record<string, Record<string, Record<string, any>>>;
 
@@ -39,7 +41,7 @@ export type NormalizedEntity =
   | AnnotationNormalized
   | ContentResource
   | RangeNormalized
-  | ServiceNormalized
+  | _ServiceNormalized
   | ResourceProviderNormalized
   | Selector;
 
@@ -69,7 +71,7 @@ export type Entities = {
     [id: string]: RangeNormalized;
   };
   Service: {
-    [id: string]: ServiceNormalized;
+    [id: string]: _ServiceNormalized;
   };
   Selector: {
     [id: string]: Selector;
@@ -92,6 +94,4 @@ export type IIIFStore<Meta extends MetaState = MetaState> = {
 
 export type AllActions = MappingActions | RequestActions | EntityActions | MetaActions;
 
-export type ReduxStore = Store<IIIFStore, AllActions | BatchAction>;
-
-export type Reducer<S = any, A extends Action = AnyAction> = (state: S, action: A) => S;
+export type Reducer<TState, TAction> = (state: TState | undefined, action: TAction) => TState;

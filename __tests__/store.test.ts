@@ -104,16 +104,16 @@ describe('Store', function () {
 
       expect(store.getState().iiif.entities.Manifest['https://example.org/manifest-1'].items).toHaveLength(3);
       expect(store.getState().iiif.entities.Manifest['https://example.org/manifest-1'].items).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "id": "https://example.org/manifest-1/canvas-1",
             "type": "Canvas",
           },
-          Object {
+          {
             "id": "https://example.org/manifest-1/canvas-2",
             "type": "Canvas",
           },
-          Object {
+          {
             "id": "https://example.org/manifest-1/canvas-3",
             "type": "Canvas",
           },
@@ -133,12 +133,12 @@ describe('Store', function () {
       );
       expect(store.getState().iiif.entities.Manifest['https://example.org/manifest-1'].items).toHaveLength(2);
       expect(store.getState().iiif.entities.Manifest['https://example.org/manifest-1'].items).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "id": "https://example.org/manifest-1/canvas-1",
             "type": "Canvas",
           },
-          Object {
+          {
             "id": "https://example.org/manifest-1/canvas-3",
             "type": "Canvas",
           },
@@ -160,16 +160,16 @@ describe('Store', function () {
 
       expect(store.getState().iiif.entities.Manifest['https://example.org/manifest-1'].items).toHaveLength(3);
       expect(store.getState().iiif.entities.Manifest['https://example.org/manifest-1'].items).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "id": "https://example.org/manifest-1/canvas-1",
             "type": "Canvas",
           },
-          Object {
+          {
             "id": "https://example.org/manifest-1/canvas-2",
             "type": "Canvas",
           },
-          Object {
+          {
             "id": "https://example.org/manifest-1/canvas-3",
             "type": "Canvas",
           },
@@ -189,16 +189,16 @@ describe('Store', function () {
 
       expect(store.getState().iiif.entities.Manifest['https://example.org/manifest-1'].items).toHaveLength(3);
       expect(store.getState().iiif.entities.Manifest['https://example.org/manifest-1'].items).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "id": "https://example.org/manifest-1/canvas-1",
             "type": "Canvas",
           },
-          Object {
+          {
             "id": "https://example.org/manifest-1/canvas-3",
             "type": "Canvas",
           },
-          Object {
+          {
             "id": "https://example.org/manifest-1/canvas-2",
             "type": "Canvas",
           },

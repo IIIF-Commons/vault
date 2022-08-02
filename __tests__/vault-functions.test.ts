@@ -1,5 +1,5 @@
 import { Vault } from '../src';
-import { AnnotationNormalized } from '@iiif/presentation-3';
+import { AnnotationNormalized } from '@iiif/presentation-3-normalized';
 
 describe('Vault functions', () => {
   test('Loading without an ID', async () => {
@@ -15,8 +15,8 @@ describe('Vault functions', () => {
     expect(vault.get('https://example.org/annotation1')).toBeDefined();
 
     expect(vault.getState().iiif.requests).toMatchInlineSnapshot(`
-      Object {
-        "https://example.org/annotation1": Object {
+      {
+        "https://example.org/annotation1": {
           "error": undefined,
           "loadingState": "RESOURCE_READY",
           "requestUri": "https://example.org/annotation1",
@@ -50,15 +50,15 @@ describe('Vault functions', () => {
     expect(vault.get('https://example.org/annotation2')).toBeDefined();
 
     expect(vault.getState().iiif.requests).toMatchInlineSnapshot(`
-      Object {
-        "https://example.org/annotation1": Object {
+      {
+        "https://example.org/annotation1": {
           "error": undefined,
           "loadingState": "RESOURCE_READY",
           "requestUri": "https://example.org/annotation1",
           "resourceUri": "https://example.org/annotation1",
           "uriMismatch": false,
         },
-        "https://example.org/annotation2": Object {
+        "https://example.org/annotation2": {
           "error": undefined,
           "loadingState": "RESOURCE_READY",
           "requestUri": "https://example.org/annotation2",

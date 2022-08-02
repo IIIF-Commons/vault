@@ -1,12 +1,13 @@
 /// <reference types="geojson" />
 
 import { AllActions, Entities, IIIFStore, NormalizedEntity, RequestState } from './types';
-import { CollectionNormalized, ManifestNormalized, Reference } from '@iiif/presentation-3';
+import { Reference } from '@iiif/presentation-3';
 import { serialize, SerializeConfig, serializeConfigPresentation2, serializeConfigPresentation3 } from '@iiif/parser';
 import { BATCH_ACTIONS, BatchAction, batchActions, entityActions, metaActions } from './actions';
 import { createFetchHelper, areInputsEqual } from './utility';
-import { createStore, VaultZustandStore } from './store/zustand';
+import { createStore, VaultZustandStore } from './store';
 import mitt, { Emitter } from 'mitt';
+import { CollectionNormalized, ManifestNormalized } from '@iiif/presentation-3-normalized';
 
 export type VaultOptions = {
   reducers: Record<string, any>;

@@ -2,11 +2,11 @@ import * as vaultModule from './vault';
 import { getGlobal } from './utility/get-global';
 
 declare global {
-  const IIIF_VAULT: vaultModule.Vault;
-  const IIIFVault: typeof vaultModule;
+  const IIIF_VAULT: import('./vault').Vault;
+  const IIIFVault: typeof import('./vault');
 }
 
-export function globalVault(options?: vaultModule.VaultOptions) {
+export function globalVault(options?: import('./vault').VaultOptions) {
   const g = getGlobal();
   try {
     const gv = g['IIIF_VAULT'];

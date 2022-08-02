@@ -1,7 +1,6 @@
 import { actionListFromResource } from './action-list-from-resource';
-import { Unsubscribe } from 'redux';
 import { resolveIfExists } from './resolve-if-exists';
-import { NormalizedEntity, ReduxStore } from '../types';
+import { NormalizedEntity } from '../types';
 import {
   batchActions,
   requestError,
@@ -10,10 +9,10 @@ import {
   RESOURCE_LOADING,
   RESOURCE_READY,
 } from '../actions';
-import { VaultZustandStore } from '../store/zustand';
+import { VaultZustandStore } from '../store';
 
 export function createFetchHelper<T>(
-  store: ReduxStore | VaultZustandStore,
+  store: VaultZustandStore,
   fetcher: (url: string, options?: T) => any | Promise<any>,
   { waitTimeout = 30 }: { waitTimeout?: number } = {}
 ) {
@@ -28,7 +27,7 @@ export function createFetchHelper<T>(
           break;
         case RESOURCE_LOADING: {
           // Subscribe and wait for resource to be done for X seconds, otherwise continue.
-          let cleanupSubscription: Unsubscribe | undefined;
+          let cleanupSubscription: (() => void) | undefined;
           let didContinue = false;
           try {
             const resolvedEntity = await Promise.race<NormalizedEntity | undefined>([

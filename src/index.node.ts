@@ -1,8 +1,8 @@
 import fetch from 'node-fetch';
 import * as Lib from './vault';
-import { Entities, ReduxStore } from './types';
+import { Entities } from './types';
 import { getGlobal } from './utility/get-global';
-import { VaultZustandStore } from './store/zustand';
+import { VaultZustandStore } from './store';
 
 export type VaultOptions = Lib.VaultOptions;
 export type EntityRef<Ref extends keyof Entities> = Lib.EntityRef<Ref>;
