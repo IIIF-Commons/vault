@@ -61,7 +61,7 @@
     "prepublishOnly": "node ./scripts/build.mjs && node scripts/validate.mjs"
   },
   "dependencies": {
-    "@iiif/parser": "https://pkg.csb.dev/IIIF-Commons/parser/commit/3ce41659/@iiif/parser",
+    "@iiif/parser": "https://pkg.csb.dev/IIIF-Commons/parser/commit/e299a558/@iiif/parser",
     "@iiif/presentation-2": "1.*",
     "@iiif/presentation-3": "2.*",
     "typesafe-actions": "^5.1.0",

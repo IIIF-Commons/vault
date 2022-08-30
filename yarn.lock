@@ -36,9 +36,9 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@iiif/parser@https://pkg.csb.dev/IIIF-Commons/parser/commit/3ce41659/@iiif/parser":
+"@iiif/parser@https://pkg.csb.dev/IIIF-Commons/parser/commit/e299a558/@iiif/parser":
   version "1.0.10"
-  resolved "https://pkg.csb.dev/IIIF-Commons/parser/commit/3ce41659/@iiif/parser#80ca477dbb38fbc3b011c9cbc9628c528abb6d05"
+  resolved "https://pkg.csb.dev/IIIF-Commons/parser/commit/e299a558/@iiif/parser#ec2570990cd666a9c876158a6398e4076c4c0c8c"
   dependencies:
     "@iiif/presentation-2" "^1.0.2"
     "@iiif/presentation-3" "^2.0.5"
