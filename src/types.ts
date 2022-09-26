@@ -7,6 +7,7 @@ import {
   ContentResource,
   ManifestNormalized,
   RangeNormalized,
+  ResourceProviderNormalized,
   Selector,
   ServiceNormalized,
 } from '@iiif/presentation-3';
@@ -16,7 +17,6 @@ import { MetaActions } from './actions/meta-actions';
 import { RequestActions } from './actions/request-actions';
 import { Store } from 'redux';
 import { BatchAction } from './actions';
-import { ResourceProviderNormalized } from '@iiif/presentation-3/resources/provider';
 
 export type MetaState = Record<string, Record<string, Record<string, any>>>;
 
