@@ -4,5 +4,6 @@
     "manifest-with-choices-iiif-vault-2pxsd6",
     "iiif-vault-intro-e26819"
   ],
+  "buildCommand": "prepublishOnly",
   "node": "16"
 }
