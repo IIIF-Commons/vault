@@ -1,6 +1,17 @@
 name: Yarn build + test
 
-on: [push]
+on:
+  push:
+    paths:
+      - ".github/workflows/build-test.yml"
+      - "src/**"
+      - "__tests__/**"
+      - "fixtures/**"
+      - "npm/**"
+      - "pkg-tests/**"
+      - "package.json"
+      - "yarn.lock"
+      - "rollup.config.js"
 
 jobs:
   build:
