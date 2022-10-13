@@ -9,17 +9,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Workflow
-        uses: actions/github-script@v6
+      - uses: DrizlyInc/workflow-dispatch-action@v0.1.0
         with:
-          script: |
-            github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: 'common-docs',
-              workflow_id: 'docs-update.yml',
-              ref: 'main',
-              inputs: {
-                repo: context.repo.repo,
-                branch: 'main'
-              },
-            })
+          app_id: 247822
+          private_key: ${{ secrets.COMMON_DOCS_KEY }}
+          target_repository: IIIF-Commons/commons-docs
+          target_ref: main
+          workflow_filename: docs-update
+          wait_for_check: true
+          workflow_inputs: |
+            {
+              repo: context.repo.repo,
+              branch: 'main'
+            }
