@@ -15,11 +15,11 @@ jobs:
           script: |
             github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
-              repo: context.repo.repo',
+              repo: 'common-docs',
               workflow_id: 'docs-update.yml',
               ref: 'main',
               inputs: {
-                repo: github.repository,
+                repo: context.repo.repo,
                 branch: 'main'
               },
             })
