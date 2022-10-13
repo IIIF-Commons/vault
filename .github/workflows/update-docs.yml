@@ -2,8 +2,10 @@ name: Update documentation
 
 on:
   push:
-    branches:
-      - main
+    branches: [ 'main' ]
+    paths:
+      - ".github/workflows/update-docs.yml"
+      - "docs/**"
 
 jobs:
   updating-documentation:
@@ -16,7 +18,7 @@ jobs:
           target_repository: IIIF-Commons/common-docs
           target_ref: main
           workflow_filename: docs-update
-          wait_for_check: true
+          wait_for_check: false
           workflow_inputs: |
             {
               "branch": "main"
