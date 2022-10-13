@@ -19,6 +19,6 @@ jobs:
           wait_for_check: true
           workflow_inputs: |
             {
-              repo: context.repo.repo,
-              branch: 'main'
+              "repo": "${{ context.repo.repo }}",
+              "branch": "main"
             }
