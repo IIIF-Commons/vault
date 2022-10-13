@@ -20,7 +20,5 @@ jobs:
           workflow_filename: docs-update
           wait_for_check: false
           workflow_inputs: |
-            {
-              "branch": "main"
-            }
+            { "branch": "main" }
         continue-on-error: true
