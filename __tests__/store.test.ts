@@ -1,12 +1,53 @@
 import { createStore } from '../src/store';
 import { entityActions } from '../src/actions';
-import { emptyCanvas, emptyManifest } from '@iiif/parser';
+import { emptyCanvas, emptyManifest, normalize } from '@iiif/parser';
+import { Collection, Manifest } from '@iiif/presentation-3';
 
 describe('Store', function () {
   test('It should be creatable', () => {
     const store = createStore();
 
     expect(store).toBeDefined();
+  });
+
+  describe('collection then manifest', () => {
+    //
+    test('Bug: partOf collection', () => {
+      const collection: Collection = {
+        '@context': 'http://iiif.io/api/presentation/3/context.json',
+        id: 'https://example.org/collection-1',
+        type: 'Collection',
+        label: { en: ['The collection'] },
+        items: [],
+      };
+
+      const manifest: Manifest = {
+        '@context': 'http://iiif.io/api/presentation/3/context.json',
+        id: 'https://example.org/manifest-1',
+        type: 'Manifest',
+        label: { en: ['The manifest'] },
+        items: [],
+        partOf: [
+          {
+            id: 'https://example.org/collection-1',
+            type: 'Collection',
+          },
+        ],
+      };
+
+      const store = createStore();
+
+      store.dispatch(entityActions.importEntities(normalize(collection)));
+
+      expect(store.getState().iiif.entities.Collection['https://example.org/collection-1'].label).toEqual({
+        en: ['The collection'],
+      });
+      store.dispatch(entityActions.importEntities(normalize(manifest)));
+
+      expect(store.getState().iiif.entities.Collection['https://example.org/collection-1'].label).toEqual({
+        en: ['The collection'],
+      });
+    });
   });
 
   describe('Entity actions', () => {
@@ -232,7 +273,6 @@ describe('Store', function () {
         })
       );
       expect(store.getState().iiif.entities.Manifest['https://example.org/manifest-1'].items).toHaveLength(2);
-
     });
   });
 });
