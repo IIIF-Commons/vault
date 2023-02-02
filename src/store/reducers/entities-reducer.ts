@@ -3,7 +3,7 @@ import { getDefaultEntities } from '../../utility';
 import { EntityActions, ADD_REFERENCE, IMPORT_ENTITIES, MODIFY_ENTITY_FIELD, REMOVE_REFERENCE } from '../../actions';
 import { REORDER_ENTITY_FIELD } from '../../actions/entity-actions';
 import { isReferenceList } from '../../utility/is-reference-list';
-import { mergeEntities } from '@iiif/parser';
+import * as Parser from '@iiif/parser';
 
 export const entitiesReducer = (state: Entities = getDefaultEntities(), action: EntityActions) => {
   switch (action.type) {
@@ -58,19 +58,28 @@ export const entitiesReducer = (state: Entities = getDefaultEntities(), action: 
       const keys = Object.keys(action.payload.entities) as Array<keyof Entities>;
       const toReturn: Entities = { ...state };
 
-      for (const key of keys) {
-        const entities = action.payload.entities[key];
-        const newEntities: any = { ...(state[key] || {}) };
-        let changed = false;
-        const ids = (Object.keys(entities || {}) as string[]) || [];
-        if (entities && ids) {
-          for (const id of ids) {
-            changed = true;
-            newEntities[id] = state[key][id] ? mergeEntities(state[key][id], entities[id]) : entities[id];
+      if (Parser.mergeEntities) {
+        for (const key of keys) {
+          const entities = action.payload.entities[key];
+          const newEntities: any = { ...(state[key] || {}) };
+          let changed = false;
+          const ids = (Object.keys(entities || {}) as string[]) || [];
+          if (entities && ids) {
+            for (const id of ids) {
+              changed = true;
+              newEntities[id] = state[key][id] ? Parser.mergeEntities(state[key][id], entities[id]) : entities[id];
+            }
+            if (changed) {
+              toReturn[key] = newEntities as any;
+            }
           }
-          if (changed) {
-            toReturn[key] = newEntities as any;
-          }
+        }
+      } else {
+        for (const key of keys) {
+          toReturn[key] = {
+            ...(state[key] || {}),
+            ...(action.payload.entities[key] || {}),
+          } as any;
         }
       }
 
