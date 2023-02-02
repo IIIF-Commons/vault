@@ -4,6 +4,7 @@ import { EntityActions, ADD_REFERENCE, IMPORT_ENTITIES, MODIFY_ENTITY_FIELD, REM
 import { REORDER_ENTITY_FIELD } from '../../actions/entity-actions';
 import { isReferenceList } from '../../utility/is-reference-list';
 import * as Parser from '@iiif/parser';
+import { quickMerge } from "../../utility/quick-merge";
 
 export const entitiesReducer = (state: Entities = getDefaultEntities(), action: EntityActions) => {
   switch (action.type) {
@@ -58,28 +59,19 @@ export const entitiesReducer = (state: Entities = getDefaultEntities(), action: 
       const keys = Object.keys(action.payload.entities) as Array<keyof Entities>;
       const toReturn: Entities = { ...state };
 
-      if (Parser.mergeEntities) {
-        for (const key of keys) {
-          const entities = action.payload.entities[key];
-          const newEntities: any = { ...(state[key] || {}) };
-          let changed = false;
-          const ids = (Object.keys(entities || {}) as string[]) || [];
-          if (entities && ids) {
-            for (const id of ids) {
-              changed = true;
-              newEntities[id] = state[key][id] ? Parser.mergeEntities(state[key][id], entities[id]) : entities[id];
-            }
-            if (changed) {
-              toReturn[key] = newEntities as any;
-            }
+      for (const key of keys) {
+        const entities = action.payload.entities[key];
+        const newEntities: any = { ...(state[key] || {}) };
+        let changed = false;
+        const ids = (Object.keys(entities || {}) as string[]) || [];
+        if (entities && ids) {
+          for (const id of ids) {
+            changed = true;
+            newEntities[id] = state[key][id] ? quickMerge(state[key][id], entities[id]) : entities[id];
           }
-        }
-      } else {
-        for (const key of keys) {
-          toReturn[key] = {
-            ...(state[key] || {}),
-            ...(action.payload.entities[key] || {}),
-          } as any;
+          if (changed) {
+            toReturn[key] = newEntities as any;
+          }
         }
       }
 
