@@ -1,5 +1,6 @@
 import '../src/global-vault';
 import { globalVault } from '../src';
+import { describe, test, expect } from 'vitest';
 
 describe('global vault', () => {
   test('global vault defined', () => {

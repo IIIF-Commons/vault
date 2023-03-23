@@ -2,6 +2,7 @@ import { createStore } from '../src/store';
 import { entityActions } from '../src/actions';
 import { emptyCanvas, emptyManifest, normalize } from '@iiif/parser';
 import { Collection, Manifest } from '@iiif/presentation-3';
+import { describe, test, expect } from 'vitest';
 
 describe('Store', function () {
   test('It should be creatable', () => {

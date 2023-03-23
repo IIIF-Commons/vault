@@ -7,6 +7,8 @@ import hasPart from '../fixtures/presentation-3/has-part.json';
 import { Vault } from '../src/vault';
 import { ManifestNormalized } from '@iiif/presentation-3-normalized';
 import invariant from 'tiny-invariant';
+import { describe, test, expect } from 'vitest';
+import { entityActions } from '../src/actions/entity-actions';
 
 describe('vault', () => {
   test('nls manifest 2', async () => {
@@ -793,7 +795,7 @@ describe('vault', () => {
 
   test('Has part integration', async () => {
     const vault = new Vault();
-    const manifest = await vault.load<ManifestNormalized>(hasPart.id, hasPart);
+    const manifest = await vault.load<ManifestNormalized>(hasPart.id, JSON.parse(JSON.stringify(hasPart)));
 
     invariant(manifest);
 
@@ -871,6 +873,292 @@ describe('vault', () => {
           ],
           "type": "Image",
           "width": 4032,
+        },
+      ]
+    `);
+  });
+
+  test('Update metadata actions', async () => {
+    const vault = new Vault();
+    const manifest = await vault.load<ManifestNormalized>(hasPart.id, JSON.parse(JSON.stringify(hasPart)));
+
+    // Add metadata.
+    vault.dispatch(
+      entityActions.addMetadata({
+        id: manifest.id,
+        type: 'Manifest',
+        label: { en: ['Test example label'] },
+        value: { en: ['Test example value'] },
+      })
+    );
+
+    expect(vault.get(manifest).metadata).toMatchInlineSnapshot(`
+        [
+          {
+            "label": {
+              "en": [
+                "Test example label",
+              ],
+            },
+            "value": {
+              "en": [
+                "Test example label",
+              ],
+            },
+          },
+        ]
+      `);
+
+    vault.dispatch(
+      entityActions.addMetadata({
+        id: manifest.id,
+        type: 'Manifest',
+        label: { en: ['Test example label 2'] },
+        value: { en: ['Test example value 2'] },
+      })
+    );
+
+    expect(vault.get(manifest).metadata).toMatchInlineSnapshot(`
+      [
+        {
+          "label": {
+            "en": [
+              "Test example label",
+            ],
+          },
+          "value": {
+            "en": [
+              "Test example label",
+            ],
+          },
+        },
+        {
+          "label": {
+            "en": [
+              "Test example label 2",
+            ],
+          },
+          "value": {
+            "en": [
+              "Test example label 2",
+            ],
+          },
+        },
+      ]
+    `);
+
+    vault.dispatch(
+      entityActions.updateMetadata({
+        id: manifest.id,
+        atIndex: 0,
+        type: 'Manifest',
+        label: { en: ['Update label'] },
+        value: { en: ['Update value'] },
+      })
+    );
+
+    expect(vault.get(manifest).metadata).toMatchInlineSnapshot(`
+      [
+        {
+          "label": {
+            "en": [
+              "Update label",
+            ],
+          },
+          "value": {
+            "en": [
+              "Update label",
+            ],
+          },
+        },
+        {
+          "label": {
+            "en": [
+              "Test example label 2",
+            ],
+          },
+          "value": {
+            "en": [
+              "Test example label 2",
+            ],
+          },
+        },
+      ]
+    `);
+
+    vault.dispatch(
+      entityActions.updateMetadata({
+        id: manifest.id,
+        atIndex: 1,
+        type: 'Manifest',
+        label: { en: ['Update label 2'] },
+        value: { en: ['Update value 2'] },
+      })
+    );
+
+    expect(vault.get(manifest).metadata).toMatchInlineSnapshot(`
+      [
+        {
+          "label": {
+            "en": [
+              "Update label",
+            ],
+          },
+          "value": {
+            "en": [
+              "Update label",
+            ],
+          },
+        },
+        {
+          "label": {
+            "en": [
+              "Update label 2",
+            ],
+          },
+          "value": {
+            "en": [
+              "Update label 2",
+            ],
+          },
+        },
+      ]
+    `);
+
+    vault.dispatch(
+      entityActions.addMetadata({
+        id: manifest.id,
+        beforeIndex: 0,
+        type: 'Manifest',
+        label: { en: ['Value 3'] },
+        value: { en: ['Value 3'] },
+      })
+    );
+
+    expect(vault.get(manifest).metadata).toMatchInlineSnapshot(`
+      [
+        {
+          "label": {
+            "en": [
+              "Value 3",
+            ],
+          },
+          "value": {
+            "en": [
+              "Value 3",
+            ],
+          },
+        },
+        {
+          "label": {
+            "en": [
+              "Update label",
+            ],
+          },
+          "value": {
+            "en": [
+              "Update label",
+            ],
+          },
+        },
+        {
+          "label": {
+            "en": [
+              "Update label 2",
+            ],
+          },
+          "value": {
+            "en": [
+              "Update label 2",
+            ],
+          },
+        },
+      ]
+    `);
+
+    vault.dispatch(
+      entityActions.reorderMetadata({
+        id: manifest.id,
+        type: 'Manifest',
+        startIndex: 0,
+        endIndex: 2,
+      })
+    );
+
+    expect(vault.get(manifest).metadata).toMatchInlineSnapshot(`
+      [
+        {
+          "label": {
+            "en": [
+              "Update label",
+            ],
+          },
+          "value": {
+            "en": [
+              "Update label",
+            ],
+          },
+        },
+        {
+          "label": {
+            "en": [
+              "Update label 2",
+            ],
+          },
+          "value": {
+            "en": [
+              "Update label 2",
+            ],
+          },
+        },
+        {
+          "label": {
+            "en": [
+              "Value 3",
+            ],
+          },
+          "value": {
+            "en": [
+              "Value 3",
+            ],
+          },
+        },
+      ]
+    `);
+
+    vault.dispatch(
+      entityActions.removeMetadata({
+        id: manifest.id,
+        type: 'Manifest',
+        atIndex: 0,
+      })
+    );
+
+    expect(vault.get(manifest).metadata).toMatchInlineSnapshot(`
+      [
+        {
+          "label": {
+            "en": [
+              "Update label 2",
+            ],
+          },
+          "value": {
+            "en": [
+              "Update label 2",
+            ],
+          },
+        },
+        {
+          "label": {
+            "en": [
+              "Value 3",
+            ],
+          },
+          "value": {
+            "en": [
+              "Value 3",
+            ],
+          },
         },
       ]
     `);

@@ -1,5 +1,6 @@
 import { Vault } from '../src';
 import { AnnotationNormalized } from '@iiif/presentation-3-normalized';
+import { describe, test, expect } from 'vitest';
 
 describe('Vault functions', () => {
   test('Loading without an ID', async () => {

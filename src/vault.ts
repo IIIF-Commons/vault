@@ -206,8 +206,8 @@ export class Vault {
       reference = { id: reference, type: _type };
     }
 
-    const _type = type ? type : (reference as any).type;
-    const _id = (reference as any).id;
+    const _type = type ? type : (reference as any)?.type;
+    const _id = (reference as any)?.id;
     const entities = (state.iiif.entities as any)[_type];
     if (!entities) {
       const request = state.iiif.requests[_id];

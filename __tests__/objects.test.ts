@@ -1,6 +1,8 @@
 import { Vault } from '../src';
+import { describe, test, expect } from 'vitest';
+import invariant from 'tiny-invariant';
+// @ts-ignore
 import fixture from '../fixtures/presentation-3/has-part.json';
-import invariant from "tiny-invariant";
 
 describe('Objects helper', () => {
   test('equality', async () => {
