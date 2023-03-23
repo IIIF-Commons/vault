@@ -1,5 +1,5 @@
-import create from 'zustand/vanilla';
-import type { StoreApi } from 'zustand';
+import { createStore as create } from 'zustand/vanilla';
+import type { StoreApi } from 'zustand/vanilla';
 import { redux, devtools, subscribeWithSelector } from 'zustand/middleware';
 import { mappingReducer } from './reducers/mapping-reducer';
 import { entitiesReducer } from './reducers/entities-reducer';

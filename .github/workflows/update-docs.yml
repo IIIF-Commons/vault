@@ -1,0 +1,24 @@
+name: Update documentation
+
+on:
+  push:
+    branches: [ 'main' ]
+    paths:
+      - ".github/workflows/update-docs.yml"
+      - "docs/**"
+
+jobs:
+  updating-documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: DrizlyInc/workflow-dispatch-action@v0.1.0
+        with:
+          app_id: 247822
+          private_key: ${{ secrets.COMMON_DOCS_KEY }}
+          target_repository: IIIF-Commons/common-docs
+          target_ref: main
+          workflow_filename: docs-update
+          wait_for_check: false
+          workflow_inputs: |
+            { "branch": "main" }
+        continue-on-error: true

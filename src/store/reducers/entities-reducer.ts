@@ -3,6 +3,8 @@ import { getDefaultEntities } from '../../utility';
 import { EntityActions, ADD_REFERENCE, IMPORT_ENTITIES, MODIFY_ENTITY_FIELD, REMOVE_REFERENCE } from '../../actions';
 import { REORDER_ENTITY_FIELD } from '../../actions/entity-actions';
 import { isReferenceList } from '../../utility/is-reference-list';
+import * as Parser from '@iiif/parser';
+import { quickMerge } from "../../utility/quick-merge";
 
 export const entitiesReducer = (state: Entities = getDefaultEntities(), action: EntityActions) => {
   switch (action.type) {
@@ -58,10 +60,19 @@ export const entitiesReducer = (state: Entities = getDefaultEntities(), action: 
       const toReturn: Entities = { ...state };
 
       for (const key of keys) {
-        toReturn[key] = {
-          ...(state[key] || {}),
-          ...(action.payload.entities[key] || {}),
-        } as any;
+        const entities = action.payload.entities[key];
+        const newEntities: any = { ...(state[key] || {}) };
+        let changed = false;
+        const ids = (Object.keys(entities || {}) as string[]) || [];
+        if (entities && ids) {
+          for (const id of ids) {
+            changed = true;
+            newEntities[id] = state[key][id] ? quickMerge(state[key][id], entities[id]) : entities[id];
+          }
+          if (changed) {
+            toReturn[key] = newEntities as any;
+          }
+        }
       }
 
       return toReturn;

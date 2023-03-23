@@ -14,6 +14,7 @@ import { MappingActions } from './actions/mapping-actions';
 import { EntityActions } from './actions/entity-actions';
 import { MetaActions } from './actions/meta-actions';
 import { RequestActions } from './actions/request-actions';
+
 import {
   AnnotationNormalized,
   AnnotationPageNormalized,
@@ -22,8 +23,8 @@ import {
   ManifestNormalized,
   RangeNormalized,
   ResourceProviderNormalized,
+  ServiceNormalized,
 } from '@iiif/presentation-3-normalized';
-import { _ServiceNormalized } from '@iiif/parser';
 
 declare global {
   // Work around for something else.
@@ -52,7 +53,7 @@ export type NormalizedEntity =
   | AnnotationNormalized
   | ContentResource
   | RangeNormalized
-  | _ServiceNormalized
+  | ServiceNormalized
   | ResourceProviderNormalized
   | Selector;
 
@@ -69,7 +70,7 @@ export type RefToNormalized<Ref extends { type?: string }> = Ref['type'] extends
   : Ref['type'] extends 'Range'
   ? RangeNormalized
   : Ref['type'] extends 'Service'
-  ? _ServiceNormalized
+  ? ServiceNormalized
   : Ref['type'] extends 'ContentResource'
   ? ContentResource
   : Ref['type'] extends 'ResourceProvider'
@@ -126,7 +127,7 @@ export type Entities = {
     [id: string]: RangeNormalized;
   };
   Service: {
-    [id: string]: _ServiceNormalized;
+    [id: string]: ServiceNormalized;
   };
   Selector: {
     [id: string]: Selector;
