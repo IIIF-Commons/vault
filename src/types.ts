@@ -1,4 +1,15 @@
-import { AnnotationCollection, ContentResource, Selector } from '@iiif/presentation-3';
+import {
+  Annotation,
+  AnnotationCollection,
+  AnnotationPage,
+  Canvas,
+  Collection,
+  ContentResource,
+  Manifest,
+  ResourceProvider,
+  Selector,
+  Service,
+} from '@iiif/presentation-3';
 import { MappingActions } from './actions/mapping-actions';
 import { EntityActions } from './actions/entity-actions';
 import { MetaActions } from './actions/meta-actions';
@@ -44,6 +55,50 @@ export type NormalizedEntity =
   | _ServiceNormalized
   | ResourceProviderNormalized
   | Selector;
+
+export type RefToNormalized<Ref extends { type?: string }> = Ref['type'] extends 'Manifest'
+  ? ManifestNormalized
+  : Ref['type'] extends 'Canvas'
+  ? CanvasNormalized
+  : Ref['type'] extends 'AnnotationPage'
+  ? AnnotationPageNormalized
+  : Ref['type'] extends 'AnnotationCollection'
+  ? AnnotationCollection
+  : Ref['type'] extends 'Annotation'
+  ? AnnotationNormalized
+  : Ref['type'] extends 'Range'
+  ? RangeNormalized
+  : Ref['type'] extends 'Service'
+  ? _ServiceNormalized
+  : Ref['type'] extends 'ContentResource'
+  ? ContentResource
+  : Ref['type'] extends 'ResourceProvider'
+  ? ResourceProviderNormalized
+  : Ref['type'] extends 'Collection'
+  ? CollectionNormalized
+  : any;
+
+export type RefToFull<Ref extends { type?: string }> = Ref['type'] extends 'Manifest'
+  ? Manifest
+  : Ref['type'] extends 'Canvas'
+  ? Canvas
+  : Ref['type'] extends 'AnnotationPage'
+  ? AnnotationPage
+  : Ref['type'] extends 'AnnotationCollection'
+  ? AnnotationCollection
+  : Ref['type'] extends 'Annotation'
+  ? Annotation
+  : Ref['type'] extends 'Range'
+  ? Range
+  : Ref['type'] extends 'Service'
+  ? Service
+  : Ref['type'] extends 'ContentResource'
+  ? ContentResource
+  : Ref['type'] extends 'ResourceProvider'
+  ? ResourceProvider
+  : Ref['type'] extends 'Collection'
+  ? Collection
+  : any;
 
 export type Entities = {
   Collection: {

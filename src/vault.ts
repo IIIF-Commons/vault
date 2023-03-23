@@ -1,13 +1,22 @@
 /// <reference types="geojson" />
 
-import { AllActions, Entities, IIIFStore, NormalizedEntity, RequestState } from './types';
-import { Reference } from '@iiif/presentation-3';
-import { serialize, SerializeConfig, serializeConfigPresentation2, serializeConfigPresentation3 } from '@iiif/parser';
+import { AllActions, Entities, IIIFStore, NormalizedEntity, RefToNormalized, RequestState } from './types';
+import { Collection, Manifest, Reference } from "@iiif/presentation-3";
+import {
+  frameResource,
+  HAS_PART,
+  PART_OF,
+  serialize,
+  SerializeConfig,
+  serializeConfigPresentation2,
+  serializeConfigPresentation3,
+} from '@iiif/parser';
 import { BATCH_ACTIONS, BatchAction, batchActions, entityActions, metaActions } from './actions';
 import { createFetchHelper, areInputsEqual } from './utility';
 import { createStore, VaultZustandStore } from './store';
 import mitt, { Emitter } from 'mitt';
 import { CollectionNormalized, ManifestNormalized } from '@iiif/presentation-3-normalized';
+import { DEFINED, wrapObject } from './utility/objects';
 
 export type VaultOptions = {
   reducers: Record<string, any>;
@@ -16,7 +25,8 @@ export type VaultOptions = {
   enableDevtools: boolean;
 };
 
-export type GetOptions = { skipSelfReturn?: boolean };
+export type GetOptions = { skipSelfReturn?: boolean; parent?: Reference<any> };
+export type GetObjectOptions = GetOptions & { reactive?: boolean };
 
 export type EntityRef<Ref extends keyof Entities> = IIIFStore['iiif']['entities'][Ref][string];
 
@@ -137,40 +147,39 @@ export class Vault {
     return this.serialize<Return>(entity, serializeConfigPresentation3);
   }
 
-  hydrate<Entity extends EntityRef<any>>(
-    reference: string[] | Reference<any>[] | NormalizedEntity[],
-    type?: string
-  ): Entity[];
-  hydrate<Entity extends EntityRef<any>>(reference: string[] | Reference<any>[] | NormalizedEntity[]): Entity[];
-  hydrate<Entity extends EntityRef<any>>(reference: string | Reference<any> | NormalizedEntity, type?: string): Entity;
-  hydrate<Entity extends EntityRef<any>>(reference: string | Reference<any> | NormalizedEntity): Entity;
-  hydrate<Entity extends EntityRef<any>>(
-    reference: string | Reference<any> | NormalizedEntity | string[] | Reference<any>[] | NormalizedEntity[],
-    type?: string
-  ): Entity | Entity[] {
-    return this.get<Entity>(reference as any, type as any, { skipSelfReturn: false });
-  }
-
-  get<Entity extends EntityRef<any>>(
-    reference: string[] | Reference<any>[] | NormalizedEntity[],
-    type?: string,
-    opt?: GetOptions
-  ): Entity[];
-  get<Entity extends EntityRef<any>>(
-    reference: string[] | Reference<any>[] | NormalizedEntity[],
-    opt?: GetOptions
-  ): Entity[];
-  get<Entity extends EntityRef<any>>(
-    reference: string | Reference<any> | NormalizedEntity,
-    type?: string,
-    opt?: GetOptions
-  ): Entity;
-  get<Entity extends EntityRef<any>>(reference: string | Reference<any> | NormalizedEntity, opt?: GetOptions): Entity;
-  get<Entity extends EntityRef<any>>(
-    reference: string | Reference<any> | NormalizedEntity | string[] | Reference<any>[] | NormalizedEntity[],
+  hydrate<R extends { type?: string }>(
+    reference: string | Partial<R>,
+    type?: string | GetOptions,
+    options?: GetOptions
+  ): RefToNormalized<R>;
+  hydrate<R extends { type?: string }>(
+    reference: string[] | Partial<R>[],
+    type?: string | GetOptions,
+    options?: GetOptions
+  ): RefToNormalized<R>[];
+  hydrate<R extends { type?: string }>(
+    reference: string | R | NormalizedEntity | string[] | R[] | NormalizedEntity[],
     type?: string | GetOptions,
     options: GetOptions = {}
-  ): Entity | Entity[] {
+  ): RefToNormalized<R> | RefToNormalized<R>[] {
+    return this.get<R>(reference as any, type as any, { ...options, skipSelfReturn: false });
+  }
+
+  get<R extends { type?: string }>(
+    reference: string | Partial<R> | Reference<R['type']>,
+    type?: string | GetOptions,
+    options?: GetOptions
+  ): RefToNormalized<R>;
+  get<R extends { type?: string }>(
+    reference: string[] | Partial<R>[] | Reference<R['type']>[],
+    type?: string | GetOptions,
+    options?: GetOptions
+  ): RefToNormalized<R>[];
+  get<R extends { type?: string }>(
+    reference: string | R | NormalizedEntity | string[] | R[] | NormalizedEntity[],
+    type?: string | GetOptions,
+    options: GetOptions = {}
+  ): RefToNormalized<R> | RefToNormalized<R>[] {
     if (typeof type !== 'string') {
       options = type || {};
       type = undefined;
@@ -210,6 +219,15 @@ export class Vault {
         return null as any;
       }
       return reference as any;
+    }
+
+    const found = entities[(reference as any).id];
+    if (found && found[HAS_PART]) {
+      const framing = found[HAS_PART].find((t: any) => {
+        return options.parent ? t[PART_OF] === options.parent.id : t[PART_OF] === found.id;
+      });
+
+      return frameResource(found, framing);
     }
 
     return entities[(reference as any).id] || (skipSelfReturn ? null : reference);
@@ -304,6 +322,41 @@ export class Vault {
     }
 
     return resourceMeta[metaKey] as T[Key];
+  }
+
+  getObject<R extends { type?: string }>(
+    reference: string | Partial<R>,
+    type?: string | GetObjectOptions,
+    options?: GetObjectOptions
+  ): RefToNormalized<R>;
+  getObject<R extends { type?: string }>(
+    reference: string[] | Partial<R>[],
+    type?: string | GetObjectOptions,
+    options?: GetObjectOptions
+  ): RefToNormalized<R>[];
+  getObject<R extends { type?: string }>(
+    reference: string | R | NormalizedEntity | string[] | R[] | NormalizedEntity[],
+    type?: string | GetObjectOptions,
+    options: GetObjectOptions = {}
+  ): RefToNormalized<R> | RefToNormalized<R>[] {
+    const { reactive, ...otherOptions } = options;
+    return wrapObject(this.get(reference as any, type, otherOptions), this, reactive);
+  }
+
+  async loadObject(id: string | Reference<any>, json?: any): Promise<any> {
+    return wrapObject(await this.load(id, json), this);
+  }
+  async loadManifestObject(id: string | Reference<any>, json?: any): Promise<Manifest | null> {
+    return wrapObject(await this.loadManifest(id, json), this);
+  }
+  async loadCollectionObject(id: string | Reference<any>, json?: any): Promise<Collection | null> {
+    return wrapObject(await this.loadCollection(id, json), this);
+  }
+  wrapObject<T extends string>(objectType: Reference<T>) {
+    return wrapObject(this.get(objectType, { skipSelfReturn: false }), this);
+  }
+  isWrapped(object: any) {
+    return !!object[DEFINED];
   }
 
   setMetaValue<Value = any>(

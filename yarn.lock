@@ -36,11 +36,11 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@iiif/parser@https://pkg.csb.dev/IIIF-Commons/parser/commit/4626c152/@iiif/parser":
-  version "1.0.10"
-  resolved "https://pkg.csb.dev/IIIF-Commons/parser/commit/4626c152/@iiif/parser#b72360a1e804bdae9b33b8783cba8fadc715be83"
+"@iiif/parser@https://pkg.csb.dev/IIIF-Commons/parser/commit/79a20658/@iiif/parser":
+  version "1.1.2"
+  resolved "https://pkg.csb.dev/IIIF-Commons/parser/commit/79a20658/@iiif/parser#788efec51658339aa754dc6ab281abd4e9f8e6f8"
   dependencies:
-    "@iiif/presentation-2" "^1.0.2"
+    "@iiif/presentation-2" "^1.0.4"
     "@iiif/presentation-3" "^2.0.5"
     "@iiif/presentation-3-normalized" "^0.9.7"
     "@types/geojson" "^7946.0.10"
@@ -50,10 +50,10 @@
   resolved "https://registry.yarnpkg.com/@iiif/presentation-2/-/presentation-2-1.0.1.tgz#0d76fedfeac65b31afcc30d9a8dc17f2e57041e4"
   integrity sha512-iWF6rgAi9ksSwbH/4uJW1/49DOL1wN2mLKovu0qy1GYtCTg42bryAxYtnBsw6LrJZWykTStv7R3DynChfECmnA==
 
-"@iiif/presentation-2@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@iiif/presentation-2/-/presentation-2-1.0.2.tgz#c712c4a40cc5b7291b8d92646b0ec8b8215b9b3d"
-  integrity sha512-EN/p+td5VrHvUsQXV26VkaDFW0HG2GPRaibPlxJRip8au8ABBrOYPIcBH69Hyk3I0UnW3xzK2VsZ9TcuQEn0Mw==
+"@iiif/presentation-2@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@iiif/presentation-2/-/presentation-2-1.0.4.tgz#1664aee995462fdf66ec8dfbae54fc22b4f79c97"
+  integrity sha512-hJakpq62VBajesLJrYPtFm6hcn6c/HkKP7CmKZ5atuzu40m0nifWYsqigR1l9sZGvhhHb/DRshPmiW/0GNrJoA==
 
 "@iiif/presentation-3-normalized@^0.9.7":
   version "0.9.7"

@@ -2,6 +2,8 @@
 import nlsManifest from '../fixtures/presentation-2/nls-manifest.json';
 // @ts-ignore
 import nlsManifest2 from '../fixtures/presentation-2/nls-manifest.json';
+// @ts-ignore
+import hasPart from '../fixtures/presentation-3/has-part.json';
 import { Vault } from '../src/vault';
 import { ManifestNormalized } from '@iiif/presentation-3-normalized';
 import invariant from 'tiny-invariant';
@@ -758,14 +760,15 @@ describe('vault', () => {
 
     expect(i).toEqual(1);
 
-    expect(vault.get<ManifestNormalized>(manifest.id).label).toMatchInlineSnapshot(`
+    expect(vault.get(manifest).label).toMatchInlineSnapshot(`
       {
         "en": [
           "TEST LABEL VALUE",
         ],
       }
     `);
-    expect(vault.get<ManifestNormalized>(manifest.id).summary).toMatchInlineSnapshot(`
+
+    expect(vault.get(manifest).summary).toMatchInlineSnapshot(`
       {
         "en": [
           "TEST SUMMARY VALUE",
@@ -786,5 +789,90 @@ describe('vault', () => {
       null
     );
     expect(vault.get('https://example.org/not-in-vault', 'Manifest', { skipSelfReturn: true })).toEqual(null);
+  });
+
+  test('Has part integration', async () => {
+    const vault = new Vault();
+    const manifest = await vault.load<ManifestNormalized>(hasPart.id, hasPart);
+
+    invariant(manifest);
+
+    const canvas = vault.get(manifest.items[0]);
+
+    invariant(canvas);
+
+    const thumbnail0 = vault.get(canvas.thumbnail);
+    const thumbnail1 = vault.get(canvas.thumbnail, { parent: canvas });
+
+    const annoPage = vault.get(canvas.items[0]);
+    const anno = vault.get(annoPage.items[0]);
+
+    const thumbnail2 = vault.get(anno.body, { parent: anno });
+
+    expect(thumbnail0).toMatchInlineSnapshot(`
+      [
+        {
+          "format": "image/jpeg",
+          "height": 3024,
+          "id": "https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-gottingen/full/max/0/default.jpg",
+          "iiif-parser:hasPart": [
+            {
+              "@explicit": true,
+              "format": {},
+              "height": {},
+              "id": "https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-gottingen/full/max/0/default.jpg",
+              "iiif-parser:partOf": "https://iiif.io/api/cookbook/recipe/0005-image-service/annotation/p0001-image",
+              "service": {},
+              "type": "Image",
+              "width": {},
+            },
+            {
+              "@explicit": true,
+              "format": {},
+              "id": "https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-gottingen/full/max/0/default.jpg",
+              "iiif-parser:partOf": "https://iiif.io/api/cookbook/recipe/0005-image-service/canvas/p1",
+              "type": "Image",
+            },
+          ],
+          "service": [
+            {
+              "id": "https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-gottingen",
+              "profile": "level1",
+              "type": "ImageService3",
+            },
+          ],
+          "type": "Image",
+          "width": 4032,
+        },
+      ]
+    `);
+
+    expect(thumbnail1).toMatchInlineSnapshot(`
+      [
+        {
+          "format": "image/jpeg",
+          "id": "https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-gottingen/full/max/0/default.jpg",
+          "type": "Image",
+        },
+      ]
+    `);
+    expect(thumbnail2).toMatchInlineSnapshot(`
+      [
+        {
+          "format": "image/jpeg",
+          "height": 3024,
+          "id": "https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-gottingen/full/max/0/default.jpg",
+          "service": [
+            {
+              "id": "https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-gottingen",
+              "profile": "level1",
+              "type": "ImageService3",
+            },
+          ],
+          "type": "Image",
+          "width": 4032,
+        },
+      ]
+    `);
   });
 });
