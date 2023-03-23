@@ -11,17 +11,20 @@
 <script type="importmap">
 {
   "imports": {
-    "@iiif/parser": "../node_modules/@iiif/parser/dist/esm/index.mjs"
+    "@iiif/parser": "../node_modules/@iiif/parser/dist/bundle/esm/index.mjs"
   }
 }
 </script>
 
 <script type="module">
-  import { Vault, globalVault } from '../dist/esm/index.mjs';
+  import { Vault, globalVault } from '../dist/bundle/esm/index.mjs';
 
 
   console.log(globalVault() === IIIF_VAULT);
   console.log(IIIF_VAULT);
+
+  globalVault().load('https://iiif.wellcomecollection.org/presentation/v2/b18035723').then(e => console.log(e));
+
 
 </script>
 </body>

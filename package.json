@@ -64,35 +64,35 @@
     "@iiif/presentation-3": "^1.1.3"
   },
   "dependencies": {
-    "@iiif/parser": "https://pkg.csb.dev/IIIF-Commons/parser/commit/79a20658/@iiif/parser"
-  },
-  "optionalDependencies": {
+    "@iiif/parser": "https://pkg.csb.dev/IIIF-Commons/parser/commit/79a20658/@iiif/parser",
     "@iiif/presentation-2": "1.*",
     "@iiif/presentation-3": "^1.1.3",
+    "typesafe-actions": "^5.1.0"
+  },
+  "optionalDependencies": {
     "mitt": "^3.0.0",
     "node-fetch": "^2.6.7 || ^3.2.10",
-    "tiny-invariant": "^1.2.0",
-    "typesafe-actions": "^5.1.0",
+    "tiny-invariant": "^1.3.1",
     "zustand": "^4.3.6"
   },
   "devDependencies": {
     "@iiif/presentation-3-normalized": "^0.9.7",
-    "@typescript-eslint/eslint-plugin": "^5.32.0",
-    "@typescript-eslint/parser": "^5.32.0",
-    "chalk": "^5.0.1",
-    "dts-bundle-generator": "^6.12.0",
-    "eslint": "^8.21.0",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
+    "chalk": " ^5.0.1",
+    "dts-bundle-generator": "^7.2.0",
+    "eslint": "^8.36.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "execa": "^6.1.0",
-    "happy-dom": "^6.0.4",
+    "execa": "^7.1.1",
+    "happy-dom": "^8.9.0",
     "mitt": "^3.0.0",
-    "prettier": "^2.7.1",
-    "terser": "^5.14.2",
-    "tiny-invariant": "^1.2.0",
-    "tslib": "^2.4.0",
-    "typescript": "^4.7.4",
-    "vite": "^3.0.4",
-    "vitest": "^0.20.3",
+    "prettier": "^2.8.6",
+    "terser": "^5.16.6",
+    "tiny-invariant": "^1.3.1",
+    "tslib": "^2.5.0",
+    "typescript": "^5.0.2",
+    "vite": "^4.2.1",
+    "vitest": "^0.29.7",
     "zustand": "^4.3.6"
   },
   "publishConfig": {

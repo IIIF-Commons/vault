@@ -1,7 +1,7 @@
 const { globalVault, Vault } = require('@iiif/vault');
 
 (async () => {
-  const fetch = await import('node-fetch');
+  const fetch = (await import('node-fetch')).default;
 
   const vault1 = globalVault();
   const vault2 = new Vault({
@@ -21,4 +21,6 @@ const { globalVault, Vault } = require('@iiif/vault');
   } catch (e) {
     console.log('error loading from new Vault()', e);
   }
+
+  console.log(vault1);
 })();
