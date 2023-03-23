@@ -23,6 +23,13 @@ describe('vault', () => {
         ],
         "homepage": [],
         "id": "https://view.nls.uk/manifest/1286/9359/128693590/manifest.json",
+        "iiif-parser:hasPart": [
+          {
+            "id": "https://view.nls.uk/manifest/1286/9359/128693590/manifest.json",
+            "iiif-parser:partOf": "https://view.nls.uk/manifest/1286/9359/128693590/manifest.json",
+            "type": "Manifest",
+          },
+        ],
         "items": [
           {
             "id": "https://view.nls.uk/iiif/1286/9359/128693590/canvas/1",
@@ -638,7 +645,6 @@ describe('vault', () => {
             "Robert Burns. [A biography.]",
           ],
         },
-        "logo": [],
         "metadata": [
           {
             "label": {
@@ -705,11 +711,9 @@ describe('vault', () => {
             },
           },
         ],
-        "motivation": null,
         "navDate": null,
         "partOf": [],
         "placeholderCanvas": null,
-        "posterCanvas": null,
         "provider": [],
         "rendering": [],
         "requiredStatement": {
@@ -811,6 +815,25 @@ describe('vault', () => {
           "format": "image/jpeg",
           "height": 3024,
           "id": "https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-gottingen/full/max/0/default.jpg",
+          "iiif-parser:hasPart": [
+            {
+              "@explicit": true,
+              "format": {},
+              "height": {},
+              "id": "https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-gottingen/full/max/0/default.jpg",
+              "iiif-parser:partOf": "https://iiif.io/api/cookbook/recipe/0005-image-service/annotation/p0001-image",
+              "service": {},
+              "type": "Image",
+              "width": {},
+            },
+            {
+              "@explicit": true,
+              "format": {},
+              "id": "https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-gottingen/full/max/0/default.jpg",
+              "iiif-parser:partOf": "https://iiif.io/api/cookbook/recipe/0005-image-service/canvas/p1",
+              "type": "Image",
+            },
+          ],
           "service": [
             {
               "id": "https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-gottingen",
@@ -828,17 +851,8 @@ describe('vault', () => {
       [
         {
           "format": "image/jpeg",
-          "height": 3024,
           "id": "https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-gottingen/full/max/0/default.jpg",
-          "service": [
-            {
-              "id": "https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-gottingen",
-              "profile": "level1",
-              "type": "ImageService3",
-            },
-          ],
           "type": "Image",
-          "width": 4032,
         },
       ]
     `);
