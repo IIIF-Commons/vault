@@ -64,9 +64,9 @@
     "@iiif/presentation-3": "^1.1.3"
   },
   "dependencies": {
+    "@iiif/parser": "https://pkg.csb.dev/IIIF-Commons/parser/commit/79a20658/@iiif/parser"
   },
   "optionalDependencies": {
-    "@iiif/parser": "^1.1.2",
     "@iiif/presentation-2": "1.*",
     "@iiif/presentation-3": "^1.1.3",
     "mitt": "^3.0.0",
