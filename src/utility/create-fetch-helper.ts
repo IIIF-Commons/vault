@@ -93,7 +93,7 @@ export function createFetchHelper<T>(
 
     store.dispatch(requestResource({ id: url }));
     try {
-      const resource = await fetcher(url, options);
+      let resource = await fetcher(url, options);
       if (!resource.id && !resource['@id']) {
         if (resource['@type']) {
           // assume it might be presentation 2.

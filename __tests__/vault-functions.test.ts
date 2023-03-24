@@ -1,6 +1,8 @@
 import { Vault } from '../src';
 import { AnnotationNormalized } from '@iiif/presentation-3-normalized';
 import { describe, test, expect } from 'vitest';
+// @ts-ignore
+import exhibit from '../fixtures/presentation-3/exhibit-2.json';
 
 describe('Vault functions', () => {
   test('Loading without an ID', async () => {
@@ -68,5 +70,43 @@ describe('Vault functions', () => {
         },
       }
     `);
+  });
+
+  // Selectors.
+  const first = (i) => i.items[0];
+  const nth = (n: number) => (i) => i[n];
+
+  test('Loading specific resources', async () => {
+    const vault = new Vault();
+    const manifest = await vault.loadManifest(exhibit.id, exhibit);
+    const canvases = vault.deep(manifest)((i) => i.items);
+
+    // First canvas is YouTube.
+    const youtubeCanvas = canvases(nth(0));
+    // Second canvas is textual body
+    const textBody = canvases(nth(1));
+    // Third canvas has multiple images and annotations.
+    const specificResource = canvases(nth(5));
+
+    const ytAnnotation = youtubeCanvas(first)(first)((a) => a.body[0])();
+    expect(ytAnnotation.type).toEqual('Video');
+
+    const textAnnotation = textBody(first)(first)((a) => a.body[0])();
+    expect(textAnnotation.format).toEqual('text/html');
+
+    const specificAnno = specificResource(first)(first)();
+    // Specific resource
+    const specificResourceRef = specificAnno.body[0];
+    expect(specificResourceRef.type).toEqual('SpecificResource');
+
+    // Resolving the image.
+    expect(vault.get(specificResourceRef).type).toEqual('Image');
+    expect(vault.get(specificResourceRef).id).toEqual(
+      'https://dlc.services/iiif-img/7/21/81efc6f1-2c2a-42ba-8001-c7e598d91110/full/full/0/default.jpg'
+    );
+
+    // Target
+    expect(specificAnno.target.type).toEqual('SpecificResource');
+    expect(vault.get(specificAnno.target).type).toEqual('Canvas');
   });
 });

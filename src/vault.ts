@@ -1,10 +1,11 @@
 /// <reference types="geojson" />
 
 import { AllActions, Entities, IIIFStore, NormalizedEntity, RefToNormalized, RequestState } from './types';
-import { Collection, Manifest, Reference } from "@iiif/presentation-3";
+import { Collection, Manifest, Reference, SpecificResource } from '@iiif/presentation-3';
 import {
   frameResource,
   HAS_PART,
+  isSpecificResource,
   PART_OF,
   serialize,
   SerializeConfig,
@@ -16,7 +17,8 @@ import { createFetchHelper, areInputsEqual } from './utility';
 import { createStore, VaultZustandStore } from './store';
 import mitt, { Emitter } from 'mitt';
 import { CollectionNormalized, ManifestNormalized } from '@iiif/presentation-3-normalized';
-import { DEFINED, wrapObject } from './utility/objects';
+import { DEFINED, isWrapped, ReactiveWrapped, wrapObject } from './utility/objects';
+import { resolveType } from './utility/resolve-type';
 
 export type VaultOptions = {
   reducers: Record<string, any>;
@@ -25,7 +27,12 @@ export type VaultOptions = {
   enableDevtools: boolean;
 };
 
-export type GetOptions = { skipSelfReturn?: boolean; parent?: Reference<any> };
+export type GetOptions = {
+  skipSelfReturn?: boolean;
+  parent?: Reference<any> | string;
+  preserveSpecificResources?: boolean;
+  skipPartOfCheck?: boolean;
+};
 export type GetObjectOptions = GetOptions & { reactive?: boolean };
 
 export type EntityRef<Ref extends keyof Entities> = IIIFStore['iiif']['entities'][Ref][string];
@@ -166,17 +173,25 @@ export class Vault {
   }
 
   get<R extends { type?: string }>(
-    reference: string | Partial<R> | Reference<R['type']>,
+    reference: string | Partial<R> | Reference<R['type']> | SpecificResource<R>,
     type?: string | GetOptions,
     options?: GetOptions
   ): RefToNormalized<R>;
   get<R extends { type?: string }>(
-    reference: string[] | Partial<R>[] | Reference<R['type']>[],
+    reference: string[] | Partial<R>[] | Reference<R['type']>[] | SpecificResource<R>[],
     type?: string | GetOptions,
     options?: GetOptions
   ): RefToNormalized<R>[];
   get<R extends { type?: string }>(
-    reference: string | R | NormalizedEntity | string[] | R[] | NormalizedEntity[],
+    reference:
+      | string
+      | R
+      | NormalizedEntity
+      | string[]
+      | R[]
+      | NormalizedEntity[]
+      | SpecificResource<R>
+      | SpecificResource<R>[],
     type?: string | GetOptions,
     options: GetOptions = {}
   ): RefToNormalized<R> | RefToNormalized<R>[] {
@@ -186,6 +201,7 @@ export class Vault {
     }
 
     const { skipSelfReturn = true } = options || {};
+    let parent = options.parent ? (typeof options.parent === 'string' ? options.parent : options.parent.id) : undefined;
 
     // Multiples.
     if (Array.isArray(reference)) {
@@ -194,9 +210,13 @@ export class Vault {
 
     const state = this.getState();
 
+    if (isSpecificResource(reference) && !options.preserveSpecificResources) {
+      reference = reference.source;
+    }
+
     // String IDs.
     if (typeof reference === 'string') {
-      const _type: any = type ? type : state.iiif.mapping[reference];
+      const _type: any = resolveType(type ? type : state.iiif.mapping[reference]);
       if (!_type) {
         if (skipSelfReturn) {
           return null as any;
@@ -206,7 +226,19 @@ export class Vault {
       reference = { id: reference, type: _type };
     }
 
-    const _type = type ? type : (reference as any)?.type;
+    if (reference && reference.partOf && !parent && !options.skipPartOfCheck) {
+      const first = Array.isArray(reference.partOf) ? reference.partOf[0] : reference.partOf;
+      if (first) {
+        if (typeof first === 'string') {
+          parent = first;
+        }
+        if (typeof first.id === 'string') {
+          parent = first.id;
+        }
+      }
+    }
+
+    const _type = resolveType(type ? type : (reference as any)?.type);
     const _id = (reference as any)?.id;
     const entities = (state.iiif.entities as any)[_type];
     if (!entities) {
@@ -224,9 +256,8 @@ export class Vault {
     const found = entities[(reference as any).id];
     if (found && found[HAS_PART]) {
       const framing = found[HAS_PART].find((t: any) => {
-        return options.parent ? t[PART_OF] === options.parent.id : t[PART_OF] === found.id;
+        return parent ? t[PART_OF] === parent : t[PART_OF] === found.id;
       });
-
       return frameResource(found, framing);
     }
 
@@ -243,6 +274,27 @@ export class Vault {
 
   getState(): IIIFStore {
     return this.store.getState();
+  }
+
+  deep(input?: any, prev?: any) {
+    if (typeof input === 'undefined') {
+      return this.get(prev, { skipSelfReturn: false });
+    }
+    if (typeof input === 'function') {
+      try {
+        const next = input(this.get(prev, { skipSelfReturn: false }));
+        const fn: any = (newInput: any) => this.deep(newInput, next);
+        fn.size = Array.isArray(next) ? next.length : 1;
+        return fn;
+      } catch (e) {
+        const fn: any = (newInput: any) => this.deep(newInput, undefined);
+        fn.size = 0;
+        return fn;
+      }
+    }
+    const fn: any = (newInput: any) => this.deep(newInput, input);
+    fn.size = Array.isArray(input) ? input.length : 1;
+    return fn;
   }
 
   loadManifest(id: string | Reference<any>, json?: unknown): Promise<ManifestNormalized | undefined> {
@@ -330,35 +382,38 @@ export class Vault {
     options?: GetObjectOptions
   ): RefToNormalized<R>;
   getObject<R extends { type?: string }>(
-    reference: string[] | Partial<R>[],
-    type?: string | GetObjectOptions,
-    options?: GetObjectOptions
-  ): RefToNormalized<R>[];
-  getObject<R extends { type?: string }>(
-    reference: string | R | NormalizedEntity | string[] | R[] | NormalizedEntity[],
+    reference: string | R | NormalizedEntity,
     type?: string | GetObjectOptions,
     options: GetObjectOptions = {}
-  ): RefToNormalized<R> | RefToNormalized<R>[] {
+  ): RefToNormalized<R> {
     const { reactive, ...otherOptions } = options;
-    return wrapObject(this.get(reference as any, type, otherOptions), this, reactive);
+    return wrapObject(this.get(reference as any, type, otherOptions), this, reactive) as any;
   }
 
-  async loadObject(id: string | Reference<any>, json?: any): Promise<any> {
-    return wrapObject(await this.load(id, json), this);
+  async loadObject<Type, NormalizedType = any>(
+    id: string | Reference<any>,
+    json?: any
+  ): Promise<ReactiveWrapped<Type, NormalizedType>> {
+    return wrapObject<Type, NormalizedType>(await this.load(id, json), this);
   }
-  async loadManifestObject(id: string | Reference<any>, json?: any): Promise<Manifest | null> {
-    return wrapObject(await this.loadManifest(id, json), this);
+  async loadManifestObject(
+    id: string | Reference<any>,
+    json?: any
+  ): Promise<ReactiveWrapped<Manifest, ManifestNormalized>> {
+    return wrapObject<Manifest, ManifestNormalized>(await this.loadManifest(id, json), this);
   }
-  async loadCollectionObject(id: string | Reference<any>, json?: any): Promise<Collection | null> {
-    return wrapObject(await this.loadCollection(id, json), this);
+  async loadCollectionObject(
+    id: string | Reference<any>,
+    json?: any
+  ): Promise<ReactiveWrapped<Collection, CollectionNormalized>> {
+    return wrapObject<Collection, CollectionNormalized>(await this.loadCollection(id, json), this);
   }
   wrapObject<T extends string>(objectType: Reference<T>) {
     return wrapObject(this.get(objectType, { skipSelfReturn: false }), this);
   }
   isWrapped(object: any) {
-    return !!object[DEFINED];
+    return isWrapped(object);
   }
-
   setMetaValue<Value = any>(
     [id, meta, key]: [string, string, string],
     newValueOrUpdate: Value | ((oldValue: Value | undefined) => Value)

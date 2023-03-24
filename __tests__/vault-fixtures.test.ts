@@ -811,6 +811,23 @@ describe('vault', () => {
 
     const thumbnail2 = vault.get(anno.body, { parent: anno });
 
+    const thumbnail3 = vault.get({
+      type: 'SpecificResource',
+      source: {
+        id: 'https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-gottingen/full/max/0/default.jpg',
+        type: 'Image',
+        partOf: 'https://iiif.io/api/cookbook/recipe/0005-image-service/canvas/p1',
+      },
+    });
+
+    expect(thumbnail3).toMatchInlineSnapshot(`
+      {
+        "format": "image/jpeg",
+        "id": "https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-gottingen/full/max/0/default.jpg",
+        "type": "Image",
+      }
+    `);
+
     expect(thumbnail0).toMatchInlineSnapshot(`
       [
         {

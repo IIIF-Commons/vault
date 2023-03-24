@@ -1,4 +1,5 @@
 import { Vault } from '../vault';
+import { LinkingNormalized, StructuralNormalized } from '@iiif/presentation-3';
 
 function defineProperty(name: string, prototype: any, vault: Vault, enumerable = true) {
   prototype[DEFINED] = prototype[DEFINED] || [];
@@ -48,13 +49,78 @@ export const REACTIVE = Symbol.for('_reactive_');
 export const DEFINED = Symbol.for('_defined_');
 export const PARENT = Symbol.for('_parent_');
 
-function createPrototype(vault: Vault, reactive = false, parent?: string) {
-  const prototype = {
-    id: null,
-    [DEFINED]: [] as any[],
+export type WrappedObject<OG = any> = {
+  subscribe(subscription: (object: any, vault: Vault) => void, skipInitial?: boolean): () => void;
+  reactive(): void;
+  unreactive(): void;
+  refresh(): void;
+  unwrap(): OG;
+  valueOf(): OG;
+  toPresentation3(): any;
+  toPresentation2(): any;
+  is(refOrObject: any): boolean;
+  toJSON(): any;
+};
+
+export type ReactiveWrapped<Full = any, T = any> = {} & WrappedObject<Full> &
+  Omit<
+    Full,
+    | 'items'
+    | 'annotations'
+    | 'structures'
+    | 'seeAlso'
+    | 'rendering'
+    | 'partOf'
+    | 'start'
+    | 'supplementary'
+    | 'homepage'
+    | 'thumbnail'
+    | 'placeholderCanvas'
+    | 'accompanyingCanvas'
+    | 'provider'
+    | 'body'
+    | 'logo'
+  > & {
+    items: Full extends { items: (infer A)[] }
+      ? (Full['items'][number] & ReactiveWrapped<any, Full['items'][number]>)[]
+      : never;
+    annotations: Full extends { annotations: (infer A)[] } ? ReactiveWrapped<any, Full['annotations'][number]>[] : never;
+    structures: Full extends { structures: (infer A)[] } ? ReactiveWrapped<any, Full['structures'][number]>[] : never;
+    seeAlso: Full extends { seeAlso: (infer A)[] } ? ReactiveWrapped<any, Full['seeAlso'][number]>[] : never;
+    rendering: Full extends { rendering: (infer A)[] } ? ReactiveWrapped<any, Full['rendering'][number]>[] : never;
+    partOf: Full extends { partOf: (infer A)[] } ? ReactiveWrapped<any, Full['partOf'][number]>[] : never;
+    start: Full extends { start: (infer A)[] } ? ReactiveWrapped<any, Full['start'][number]>[] : never;
+    supplementary: Full extends { supplementary: (infer A)[] }
+      ? ReactiveWrapped<any, Full['supplementary'][number]>[]
+      : never;
+    homepage: Full extends { homepage: (infer A)[] } ? ReactiveWrapped<any, Full['homepage'][number]>[] : never;
+    thumbnail: Full extends { thumbnail: (infer A)[] } ? ReactiveWrapped<any, Full['thumbnail'][number]>[] : never;
+    placeholderCanvas: Full extends { placeholderCanvas: (infer A)[] }
+      ? ReactiveWrapped<any, Full['placeholderCanvas'][number]>[]
+      : never;
+    accompanyingCanvas: Full extends { accompanyingCanvas: (infer A)[] }
+      ? ReactiveWrapped<any, Full['accompanyingCanvas'][number]>[]
+      : never;
+    provider: Full extends { provider: (infer A)[] } ? ReactiveWrapped<any, Full['provider'][number]>[] : never;
+    body: Full extends { body: (infer A)[] } ? ReactiveWrapped<any, Full['body'][number]>[] : never;
+    logo: Full extends { logo: (infer A)[] } ? ReactiveWrapped<any, Full['logo'][number]>[] : never;
+  };
+
+function createPrototype<T, OG>(vault: Vault, reactive = false, parent?: string): ReactiveWrapped<T, OG> {
+  const prototype: WrappedObject<OG> & {
+    id: string;
+    type: string;
+    [REFS]: Record<string, any>;
+    [DEFINED]: any[];
+    [PARENT]: null | string;
+    [REACTIVE]: null | (() => void);
+  } = {
+    id: '',
+    type: 'unknown',
+    [DEFINED]: [],
     [REFS]: {},
-    [PARENT]: (parent || null) as null | string,
-    [REACTIVE]: null as null | (() => void),
+    [PARENT]: parent || null,
+    [REACTIVE]: null,
 
     is(refOrObject: any) {
       if (typeof refOrObject === 'string') {
@@ -85,9 +151,9 @@ function createPrototype(vault: Vault, reactive = false, parent?: string) {
         const fresh = this.unwrap();
         for (const key of Object.keys(fresh || {})) {
           if (this[DEFINED].includes(key)) {
-            (this as any)[REFS][key] = fresh[key as any];
+            (this as any)[REFS][key] = (fresh as any)[key as any];
           } else {
-            (this as any)[key] = fresh[key as any];
+            (this as any)[key] = (fresh as any)[key as any];
           }
         }
       }
@@ -117,7 +183,7 @@ function createPrototype(vault: Vault, reactive = false, parent?: string) {
     },
 
     valueOf() {
-      return this.unwrap();
+      return this.unwrap() as any;
     },
 
     toJSON() {
@@ -177,7 +243,11 @@ function createPrototype(vault: Vault, reactive = false, parent?: string) {
   defineProperty('body', prototype, vault);
   defineProperty('logo', prototype, vault);
 
-  return prototype;
+  return prototype as any;
+}
+
+export function isWrapped(object: any): object is WrappedObject {
+  return !!object[DEFINED];
 }
 
 export function unwrapObject(object: any): any {
@@ -192,11 +262,15 @@ export function unwrapObject(object: any): any {
   return { id: object.id, type: object.type };
 }
 
-export function wrapObject(object: any, vault: Vault, reactive = false, parent?: string): any {
+export function wrapObject<Type, NormalizedType = any>(
+  object: any,
+  vault: Vault,
+  reactive = false,
+  parent?: string
+): ReactiveWrapped<Type, NormalizedType> {
   if (Array.isArray(object)) {
-    return object.map((o) => wrapObject(o, vault, reactive));
+    return object.map((o) => wrapObject(o, vault, reactive)) as any;
   }
-
   if (!object || !object.type || !object.id) {
     return object;
   }
