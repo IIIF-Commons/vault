@@ -2,7 +2,7 @@ import { ActionType } from 'typesafe-actions';
 import { createAction } from '../utility/typesafe-actions-runtime';
 
 import { Entities } from '../types';
-import { InternationalString } from '@iiif/presentation-3';
+import { InternationalString, SpecificResource } from '@iiif/presentation-3';
 
 export const IMPORT_ENTITIES = '@iiif/IMPORT_ENTITIES';
 
@@ -11,6 +11,7 @@ export const MODIFY_ENTITY_FIELD = '@iiif/MODIFY_ENTITY_FIELD';
 export const REORDER_ENTITY_FIELD = '@iiif/REORDER_ENTITY_FIELD';
 
 export const ADD_REFERENCE = '@iiif/ADD_REFERENCE';
+export const UPDATE_REFERENCE = '@iiif/UPDATE_REFERENCE';
 
 export const REMOVE_REFERENCE = '@iiif/REMOVE_REFERENCE';
 
@@ -41,7 +42,7 @@ export const addReference = createAction(ADD_REFERENCE)<{
   id: string;
   key: string;
   index?: number;
-  reference: { id: string; type: string } & any;
+  reference: SpecificResource | ({ id: string; type: string } & any);
 }>();
 
 export const removeReference = createAction(REMOVE_REFERENCE)<{
@@ -49,7 +50,15 @@ export const removeReference = createAction(REMOVE_REFERENCE)<{
   id: string;
   key: string;
   index?: number;
-  reference: { id: string; type: string } & any;
+  reference: SpecificResource | ({ id: string; type: string } & any);
+}>();
+
+export const updateReference = createAction(UPDATE_REFERENCE)<{
+  type: keyof Entities;
+  id: string;
+  key: string;
+  index: number;
+  reference: SpecificResource | ({ id: string; type: string } & any);
 }>();
 
 export const addMetadata = createAction(ADD_METADATA)<{
@@ -84,6 +93,7 @@ export const entityActions = {
   reorderEntityField,
   addReference,
   removeReference,
+  updateReference,
   addMetadata,
   removeMetadata,
   updateMetadata,

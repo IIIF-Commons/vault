@@ -1,8 +1,11 @@
 import { Vault } from '../src';
 import { AnnotationNormalized } from '@iiif/presentation-3-normalized';
 import { describe, test, expect } from 'vitest';
+import { updateReference, removeReference, addReference } from '../src/actions';
 // @ts-ignore
 import exhibit from '../fixtures/presentation-3/exhibit-2.json';
+// @ts-ignore
+import hasPart from '../fixtures/presentation-3/has-part.json';
 
 describe('Vault functions', () => {
   test('Loading without an ID', async () => {
@@ -108,5 +111,90 @@ describe('Vault functions', () => {
     // Target
     expect(specificAnno.target.type).toEqual('SpecificResource');
     expect(vault.get(specificAnno.target).type).toEqual('Canvas');
+  });
+
+  test('updating reference', async () => {
+    const vault = new Vault();
+    const manifest = await vault.loadManifest(hasPart.id, hasPart);
+    const canvas = vault.get(manifest.items[0]);
+
+    // Adding normal reference.
+    vault.dispatch(
+      addReference({
+        id: manifest.id,
+        type: 'Manifest',
+        key: 'items',
+        index: 1,
+        reference: { id: canvas.id, type: 'Canvas' },
+      })
+    );
+
+    // Adding as a specific resource
+    vault.dispatch(
+      addReference({
+        id: manifest.id,
+        type: 'Manifest',
+        key: 'items',
+        index: 1,
+        reference: {
+          type: 'SpecificResource',
+          source: { id: canvas.id, type: 'Canvas' },
+        },
+      })
+    );
+
+    const refList = vault.get(manifest).items;
+    const newItemList = vault.get(refList);
+
+    expect(refList).toEqual([
+      { id: canvas.id, type: 'Canvas' },
+      {
+        type: 'SpecificResource',
+        source: { id: canvas.id, type: 'Canvas' },
+      },
+      { id: canvas.id, type: 'Canvas' },
+    ]);
+
+    expect(newItemList).toHaveLength(3);
+
+    expect(newItemList.map((r) => r.id)).toEqual([
+      'https://iiif.io/api/cookbook/recipe/0005-image-service/canvas/p1',
+      'https://iiif.io/api/cookbook/recipe/0005-image-service/canvas/p1',
+      'https://iiif.io/api/cookbook/recipe/0005-image-service/canvas/p1',
+    ]);
+
+    expect(newItemList.map((r) => r.label)).toEqual([
+      { en: ['Canvas with a single IIIF image'] },
+      { en: ['Canvas with a single IIIF image'] },
+      { en: ['Canvas with a single IIIF image'] },
+    ]);
+
+    vault.dispatch(
+      updateReference({
+        id: manifest.id,
+        type: 'Manifest',
+        key: 'items',
+        index: 1,
+        reference: {
+          type: 'SpecificResource',
+          source: { id: canvas.id, type: 'Canvas' },
+          selector: { type: 'FragmentSelector', value: 'xywh=1,2,3,' },
+        },
+      })
+    );
+
+    const newItems = vault.get(manifest).items;
+
+    expect(newItems).toHaveLength(3);
+
+    expect(vault.get(manifest).items).toEqual([
+      { id: canvas.id, type: 'Canvas' },
+      {
+        type: 'SpecificResource',
+        source: { id: canvas.id, type: 'Canvas' },
+        selector: { type: 'FragmentSelector', value: 'xywh=1,2,3,' },
+      },
+      { id: canvas.id, type: 'Canvas' },
+    ]);
   });
 });
