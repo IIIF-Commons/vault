@@ -165,7 +165,7 @@ export const entitiesReducer = (state: Entities = getDefaultEntities(), action: 
       }
 
       if (action.type === UPDATE_METADATA) {
-        metadata.splice(indexToRemove, 1, { label: payload(action).label, value: payload(action).label });
+        metadata.splice(indexToRemove, 1, { label: payload(action).label, value: payload(action).value });
       } else {
         metadata.splice(indexToRemove, 1);
       }
