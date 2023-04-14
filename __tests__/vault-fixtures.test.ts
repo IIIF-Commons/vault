@@ -984,7 +984,7 @@ describe('vault', () => {
           },
           "value": {
             "en": [
-              "Update label",
+              "Update value",
             ],
           },
         },
@@ -1023,7 +1023,7 @@ describe('vault', () => {
           },
           "value": {
             "en": [
-              "Update label",
+              "Update value",
             ],
           },
         },
@@ -1035,7 +1035,7 @@ describe('vault', () => {
           },
           "value": {
             "en": [
-              "Update label 2",
+              "Update value 2",
             ],
           },
         },
@@ -1074,7 +1074,7 @@ describe('vault', () => {
           },
           "value": {
             "en": [
-              "Update label",
+              "Update value",
             ],
           },
         },
@@ -1086,7 +1086,7 @@ describe('vault', () => {
           },
           "value": {
             "en": [
-              "Update label 2",
+              "Update value 2",
             ],
           },
         },
@@ -1112,7 +1112,7 @@ describe('vault', () => {
           },
           "value": {
             "en": [
-              "Update label",
+              "Update value",
             ],
           },
         },
@@ -1124,7 +1124,7 @@ describe('vault', () => {
           },
           "value": {
             "en": [
-              "Update label 2",
+              "Update value 2",
             ],
           },
         },
@@ -1161,7 +1161,7 @@ describe('vault', () => {
           },
           "value": {
             "en": [
-              "Update label 2",
+              "Update value 2",
             ],
           },
         },
