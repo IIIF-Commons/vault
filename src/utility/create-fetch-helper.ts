@@ -9,14 +9,15 @@ import {
   RESOURCE_LOADING,
   RESOURCE_READY,
 } from '../actions';
-import { VaultZustandStore } from '../store';
+import type { Vault } from '../vault';
 
 export function createFetchHelper<T>(
-  store: VaultZustandStore,
+  vault: Vault,
   fetcher: (url: string, options?: T) => any | Promise<any>,
   { waitTimeout = 30 }: { waitTimeout?: number } = {}
 ) {
   return async (url: string, options?: T): Promise<NormalizedEntity | undefined> => {
+    const store = vault.getStore();
     const state = store.getState();
 
     const request = state.iiif.requests[url];
@@ -91,9 +92,9 @@ export function createFetchHelper<T>(
       // do nothing, and return?
     }
 
-    store.dispatch(requestResource({ id: url }));
+    vault.dispatch(requestResource({ id: url }));
     try {
-      let resource = await fetcher(url, options);
+      const resource = await fetcher(url, options);
       if (!resource.id && !resource['@id']) {
         if (resource['@type']) {
           // assume it might be presentation 2.
@@ -105,10 +106,10 @@ export function createFetchHelper<T>(
         }
       }
       const toDispatch = actionListFromResource(url, resource);
-      store.dispatch(batchActions({ actions: toDispatch }));
+      vault.dispatch(batchActions({ actions: toDispatch }));
       return resolveIfExists(store.getState(), url);
     } catch (err) {
-      store.dispatch(requestError({ id: url, message: (err as any).toString() }));
+      vault.dispatch(requestError({ id: url, message: (err as any).toString() }));
       // Rethrow.
       throw err;
     }

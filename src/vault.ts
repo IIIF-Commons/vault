@@ -71,8 +71,8 @@ export class Vault {
         enableDevtools: this.options.enableDevtools,
       });
     this.emitter = mitt();
-    this.remoteFetcher = createFetchHelper(this.store, this.options.customFetcher) as any;
-    this.staticFetcher = createFetchHelper(this.store, (id: string, json: any) => json);
+    this.remoteFetcher = createFetchHelper(this, this.options.customFetcher) as any;
+    this.staticFetcher = createFetchHelper(this, (id: string, json: any) => json);
   }
 
   defaultFetcher = (url: string) => {
