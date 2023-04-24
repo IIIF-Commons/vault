@@ -126,7 +126,7 @@ export class Vault {
     if (!this.isBatching) {
       if (action.type === BATCH_ACTIONS) {
         for (const realAction of action.payload.actions) {
-          this.emitter.emit(realAction.type, { realAction, state: this.store.getState() });
+          this.emitter.emit(realAction.type, { action: realAction, state: this.store.getState() });
         }
         this.store.dispatch(action);
         const state = this.getState();
