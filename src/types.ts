@@ -25,6 +25,7 @@ import {
   ResourceProviderNormalized,
   ServiceNormalized,
 } from '@iiif/presentation-3-normalized';
+import { PayloadAction } from 'typesafe-actions';
 
 declare global {
   // Work around for something else.
@@ -151,3 +152,9 @@ export type IIIFStore<Meta extends MetaState = MetaState> = {
 export type AllActions = MappingActions | RequestActions | EntityActions | MetaActions;
 
 export type Reducer<TState, TAction> = (state: TState | undefined, action: TAction) => TState;
+
+export type ActionFromType<Type, Actions extends PayloadAction<any, any> = AllActions> = Actions extends {
+  type: Type;
+}
+  ? Actions
+  : never;

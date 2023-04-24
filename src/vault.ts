@@ -1,6 +1,14 @@
 /// <reference types="geojson" />
 
-import { AllActions, Entities, IIIFStore, NormalizedEntity, RefToNormalized, RequestState } from './types';
+import {
+  ActionFromType,
+  AllActions,
+  Entities,
+  IIIFStore,
+  NormalizedEntity,
+  RefToNormalized,
+  RequestState,
+} from './types';
 import { Collection, Manifest, Reference, SpecificResource } from '@iiif/presentation-3';
 import {
   frameResource,
@@ -120,6 +128,16 @@ export class Vault {
     } else {
       this.batchQueue.push(action);
     }
+  }
+
+  on<Type extends AllActions['type']>(
+    event: Type,
+    handler: (ctx: { action: ActionFromType<Type>; state: IIIFStore }) => void
+  ) {
+    this.emitter.on(event, handler);
+    return () => {
+      this.emitter.off(event, handler);
+    };
   }
 
   middleware =
