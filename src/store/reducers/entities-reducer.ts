@@ -19,6 +19,11 @@ import { quickMerge } from '../../utility/quick-merge';
 function payload<T extends { payload: any }>(action: T): T['payload'] {
   return action.payload;
 }
+
+function numberOr(a: number | undefined, b: number): number {
+  return typeof a === 'undefined' ? b : a;
+}
+
 export const entitiesReducer = (state: Entities = getDefaultEntities(), action: EntityActions) => {
   const updateField = (entity: any, values: any) => {
     return {
@@ -93,7 +98,7 @@ export const entitiesReducer = (state: Entities = getDefaultEntities(), action: 
 
       const entity: any = state[payload(action).type][payload(action).id];
       const result = Array.from(entity[payload(action).key]);
-      result.splice(payload(action).index || result.length + 1, 0, payload(action).reference);
+      result.splice(numberOr(payload(action).index, result.length + 1), 0, payload(action).reference);
 
       return updateField(entity, { [payload(action).key]: result });
     }
@@ -106,10 +111,10 @@ export const entitiesReducer = (state: Entities = getDefaultEntities(), action: 
 
       const entity: any = state[payload(action).type][payload(action).id];
       const result = Array.from(entity[payload(action).key]);
-      const indexToRemove =
-        typeof payload(action).index !== 'undefined'
-          ? (payload(action).index as number)
-          : result.findIndex((e: any) => e && e.id === payload(action).reference.id);
+      const indexToRemove = numberOr(
+        payload(action).index,
+        result.findIndex((e: any) => e && e.id === payload(action).reference.id)
+      );
 
       if (indexToRemove === -1 || (result as any[])[indexToRemove]?.id !== payload(action).reference.id) {
         // Nothing to remove.
@@ -132,14 +137,10 @@ export const entitiesReducer = (state: Entities = getDefaultEntities(), action: 
       }
       const metadata = Array.from(entity.metadata || []);
       const actionPayload = payload(action);
-      metadata.splice(
-        typeof actionPayload.beforeIndex !== 'undefined' ? actionPayload.beforeIndex : metadata.length + 1,
-        0,
-        {
-          label: actionPayload.label,
-          value: actionPayload.label,
-        }
-      );
+      metadata.splice(numberOr(action.payload.beforeIndex, metadata.length + 1), 0, {
+        label: actionPayload.label,
+        value: actionPayload.label,
+      });
 
       return updateField(entity, { metadata });
     }
