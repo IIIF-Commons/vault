@@ -131,7 +131,7 @@ export class Vault {
         this.store.dispatch(action);
         const state = this.getState();
         for (const realAction of action.payload.actions) {
-          this.emitter.emit(`after:${action.type}`, { action, state });
+          this.emitter.emit(`after:${realAction.type}`, { action: realAction, state });
         }
         return;
       }
