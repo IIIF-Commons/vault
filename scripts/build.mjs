@@ -74,10 +74,10 @@ import { execa } from "execa";
   listItem('@iiif/vault/actions');
   await execa('./node_modules/.bin/dts-bundle-generator', ['--no-check', `--out-file=${DIST}/actions/index.d.ts`, './src/actions/index.ts'])
 
-  listItem('@iiif/parser/strict');
+  listItem('@iiif/vault/store');
   await execa('./node_modules/.bin/dts-bundle-generator', ['--no-check', `--out-file=${DIST}/store/index.d.ts`, './src/store/index.ts'])
 
-  listItem('@iiif/parser/upgrader');
+  listItem('@iiif/vault/utility');
   await execa('./node_modules/.bin/dts-bundle-generator', ['--no-check', `--out-file=${DIST}/utility/index.d.ts`, './src/utility/index.ts'])
 
   function buildMsg(name) {
