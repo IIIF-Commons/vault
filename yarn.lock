@@ -172,6 +172,15 @@
     "@iiif/presentation-3-normalized" "^0.9.7"
     "@types/geojson" "^7946.0.10"
 
+"@iiif/parser@https://pkg.csb.dev/IIIF-Commons/parser/commit/704e72d1/@iiif/parser":
+  version "1.1.2"
+  resolved "https://pkg.csb.dev/IIIF-Commons/parser/commit/704e72d1/@iiif/parser#9902d4221e5eb7f8ef68be6ba12f60c600a1fd09"
+  dependencies:
+    "@iiif/presentation-2" "^1.0.4"
+    "@iiif/presentation-3" "^2.0.5"
+    "@iiif/presentation-3-normalized" "^0.9.7"
+    "@types/geojson" "^7946.0.10"
+
 "@iiif/presentation-2@1.*":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@iiif/presentation-2/-/presentation-2-1.0.1.tgz#0d76fedfeac65b31afcc30d9a8dc17f2e57041e4"
