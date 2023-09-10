@@ -163,18 +163,9 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@iiif/parser@https://pkg.csb.dev/IIIF-Commons/parser/commit/30a567d8/@iiif/parser":
+"@iiif/parser@https://pkg.csb.dev/IIIF-Commons/parser/commit/704e72d1/@iiif/parser/_pkg.tgz":
   version "1.1.2"
-  resolved "https://pkg.csb.dev/IIIF-Commons/parser/commit/30a567d8/@iiif/parser#ca6389a09f737d37da100b2dc1ccf158777a2df6"
-  dependencies:
-    "@iiif/presentation-2" "^1.0.4"
-    "@iiif/presentation-3" "^2.0.5"
-    "@iiif/presentation-3-normalized" "^0.9.7"
-    "@types/geojson" "^7946.0.10"
-
-"@iiif/parser@https://pkg.csb.dev/IIIF-Commons/parser/commit/704e72d1/@iiif/parser":
-  version "1.1.2"
-  resolved "https://pkg.csb.dev/IIIF-Commons/parser/commit/704e72d1/@iiif/parser#9902d4221e5eb7f8ef68be6ba12f60c600a1fd09"
+  resolved "https://pkg.csb.dev/IIIF-Commons/parser/commit/704e72d1/@iiif/parser/_pkg.tgz#9902d4221e5eb7f8ef68be6ba12f60c600a1fd09"
   dependencies:
     "@iiif/presentation-2" "^1.0.4"
     "@iiif/presentation-3" "^2.0.5"
